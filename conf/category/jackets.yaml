@@ -1,0 +1,9 @@
+name: "jackets"
+label_column: "Class" # column in the CSV used as the label
+label_type: "single" # "single" for multiclass, "multi" for multilabel
+csv_file: "labels_jackets.csv"
+classes:
+- "bomber"
+- "blazer"
+- "denim"
+- "leather"

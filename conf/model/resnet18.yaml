@@ -1,0 +1,4 @@
+backbone: "resnet18"
+pretrained: true
+freeze_backbone: false
+in_channels: 3

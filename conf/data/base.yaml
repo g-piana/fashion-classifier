@@ -1,0 +1,5 @@
+run: "00"
+lab_ver: "00"
+max_frames: 40000
+source_type: "all"
+subset_type: "train"

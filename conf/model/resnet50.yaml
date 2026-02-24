@@ -1,0 +1,4 @@
+backbone: "resnet50" # "resnet18" or "resnet50"
+pretrained: true
+freeze_backbone: false # set true in finetune.yaml override
+in_channels: 3

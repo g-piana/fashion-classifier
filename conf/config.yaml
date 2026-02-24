@@ -1,0 +1,7 @@
+defaults:
+- category: jackets # overridden at CLI
+- model: resnet50 # overridden at CLI
+- training: default # overridden at CLI
+- data: base
+- filesystem: local
+- _self_

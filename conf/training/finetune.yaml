@@ -1,0 +1,6 @@
+defaults:
+- default # inherit everything from default
+
+max_epochs: 20
+learning_rate: 1e-5
+freeze_backbone: true # overrides model setting
