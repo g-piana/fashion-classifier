@@ -1,5 +1,5 @@
 root: "E:/fashion-data" # e.g. "E:/fashion-data"
-raw: "raw" # raw images
+raw: "00-RAW" # raw images
 npy: "npy" # preprocessed .npy arrays
 norm: "norm" # normalization files (.npy)
 weights: "weights" # saved checkpoints

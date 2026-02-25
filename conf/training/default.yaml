@@ -5,6 +5,7 @@ learning_rate: 1e-4
 loss_function: "cross_entropy" # "cross_entropy" or "bce"
 use_class_weights: true
 val_split: 0.2
+seed: 42
 checkpoint_metric: "val_loss"
 checkpoint_mode: "min"
 

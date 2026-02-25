@@ -65,7 +65,8 @@ def main(config: DictConfig) -> None:
 
     target_size: int = config.data.image_size
     max_frames: int  = config.data.max_frames
-
+    print(f"  raw_path resolved : {raw_path}")
+    print(f"  raw_path exists   : {raw_path.exists()}")
     print(f"\n{'='*50}")
     print(f"Category  : {config.category.name}")
     print(f"Run       : {config.data.run}")
