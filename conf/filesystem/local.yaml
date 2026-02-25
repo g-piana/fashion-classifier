@@ -5,3 +5,4 @@ norm: "norm" # normalization files (.npy)
 weights: "weights" # saved checkpoints
 csv: "csv" # label CSV files
 logs: "logs" # MLflow and other logs
+mlflow_uri: "sqlite:///E:/fashion-data/logs/mlflow.db"

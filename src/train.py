@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import MLFlowLogger
-import imgaug.augmenters as iaa
+import albumentations as A
 from pathlib import Path
 
 from dataset import FashionDataset
@@ -57,21 +57,21 @@ def compute_class_weights(
     return torch.tensor(weights, dtype=torch.float32)
 
 
-def build_augmentation(aug_cfg) -> iaa.Sequential:
-    """Build imgaug pipeline from config augmentation block."""
+def build_augmentation(aug_cfg) -> A.Compose:
     ops = []
     if aug_cfg.get("gamma_contrast", False):
-        ops.append(iaa.GammaContrast())
+        ops.append(A.RandomGamma(p=0.5))
     scale = aug_cfg.get("scale", None)
     translate = aug_cfg.get("translate_px", None)
     rotate = aug_cfg.get("rotate", None)
-    if any([scale, translate, rotate]):
-        ops.append(iaa.Affine(
+    if scale or translate or rotate:
+        ops.append(A.Affine(
             scale=tuple(scale) if scale else None,
             translate_px={"x": tuple(translate), "y": tuple(translate)} if translate else None,
             rotate=tuple(rotate) if rotate else None,
+            p=0.7,
         ))
-    return iaa.Sequential(ops)
+    return A.Compose(ops)
 
 
 @hydra.main(
@@ -224,7 +224,7 @@ def main(config: DictConfig) -> None:
     mlflow_logger = MLFlowLogger(
         experiment_name=config.category.name,
         run_name=f"{config.model.backbone}_{config.data.run}",
-        tracking_uri=str(root / config.filesystem.logs / "mlruns"),
+        tracking_uri=config.filesystem.mlflow_uri,
     )
 
     # Log the full resolved Hydra config as MLflow params
