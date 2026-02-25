@@ -1,0 +1,8 @@
+name: "synthetic"
+label_column: "Category"
+label_type: "single"
+csv_file: "TEST_exp01_02.csv"
+classes:
+- "square"
+- "v_rect"
+- "h_rect"

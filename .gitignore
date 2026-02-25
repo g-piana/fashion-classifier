@@ -8,6 +8,7 @@ multirun/         # Hydra multirun outputs
 logs/
 __pycache__/
 .hydra/
+.venv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

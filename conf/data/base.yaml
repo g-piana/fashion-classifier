@@ -3,3 +3,5 @@ lab_ver: "00"
 max_frames: 40000
 source_type: "all"
 subset_type: "train"
+image_size: 224 # target square size in pixels
+raw_subdir: ""

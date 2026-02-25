@@ -1,0 +1,7 @@
+defaults:
+- base
+
+run: "01"
+raw_subdir: "data_02"
+image_size: 224
+max_frames: 10000
