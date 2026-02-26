@@ -1,0 +1,8 @@
+root: "E:/fashion-data"
+raw: "01-RAW"
+npy: "npy"
+norm: "norm"
+weights: "weights"
+csv: "csv"
+logs: "logs"
+mlflow_uri: "sqlite:///E:/fashion-data/logs/mlflow.db"

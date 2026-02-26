@@ -1,0 +1,7 @@
+defaults:
+- base
+
+run: "01"
+raw_subdir: "jackets_raw"
+image_size: 224
+max_frames: 40000

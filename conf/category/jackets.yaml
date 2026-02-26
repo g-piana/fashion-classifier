@@ -1,9 +1,11 @@
 name: "jackets"
-label_column: "Class" # column in the CSV used as the label
-label_type: "single" # "single" for multiclass, "multi" for multilabel
+label_column: "Class"
+label_type: "single"
 csv_file: "labels_jackets.csv"
 classes:
-- "bomber"
+- "baseball"
+- "biker"
 - "blazer"
-- "denim"
-- "leather"
+- "bomber"
+- "fur jacket"
+- "parka"

@@ -1,16 +1,18 @@
-max_epochs: 70
-batch_size: 16
-num_workers: 8
+max_epochs: 30
+batch_size: 32
+num_workers: 16
 learning_rate: 1e-4
 loss_function: "cross_entropy" # "cross_entropy" or "bce"
 use_class_weights: true
 val_split: 0.2
 seed: 42
-checkpoint_metric: "val_loss"
-checkpoint_mode: "min"
+checkpoint_metric: "val_acc"
+checkpoint_mode: "max"
+early_stopping_patience: 8
 
 augmentation:
   gamma_contrast: true
-  scale: [ 0.95, 1.05 ]
-  translate_px: [ -10, 10 ]
-  rotate: [ -30, 30 ]
+  scale: [ 0.85, 1.15 ]
+  translate_px: [ -20, 20 ]
+  rotate: [ -20, 20 ]
+  horizontal_flip: true # ADD THIS — jackets are symmetric
