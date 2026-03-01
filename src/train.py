@@ -223,6 +223,12 @@ def main(config: DictConfig) -> None:
     # ------------------------------------------------------------------ #
     # 8. Callbacks and logger
     # ------------------------------------------------------------------ #
+
+    # Clean up old checkpoints to avoid Lightning versioning (best-v2.ckpt etc.)
+    for old_ckpt in wts_path.glob("best*.ckpt"):
+        old_ckpt.unlink()
+        print(f"  Removed old checkpoint: {old_ckpt.name}")
+
     checkpoint_cb = ModelCheckpoint(
         dirpath=str(wts_path),
         filename="best",

@@ -3,7 +3,6 @@ label_column: "Class"
 label_type: "single"
 csv_file: "labels_jackets.csv"
 classes:
-- "baseball"
 - "biker"
 - "blazer"
 - "bomber"

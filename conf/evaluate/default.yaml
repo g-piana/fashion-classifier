@@ -1,0 +1,9 @@
+# conf/evaluate/default.yaml
+# Override any of these at CLI:
+#   evaluate.checkpoint=path/to/best.ckpt
+#   evaluate.split=val
+#   evaluate.save_errors=true
+
+checkpoint: "" # defaults to weights/category/run/best.ckpt if empty
+split: "val" # val | train | all
+save_errors: true # save misclassified stems to CSV

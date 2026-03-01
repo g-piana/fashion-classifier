@@ -4,4 +4,5 @@ defaults:
 - training: default # overridden at CLI
 - data: base
 - filesystem: local
+- evaluate: default
 - _self_

@@ -116,7 +116,9 @@ def main(config: DictConfig) -> None:
     wts_path = root / config.filesystem.weights / config.category.name / config.data.run
 
     eval_cfg   = config.get("evaluate", {})
-    ckpt_path  = eval_cfg.get("checkpoint", str(wts_path / "best.ckpt"))
+    ckpt_path  = eval_cfg.get("checkpoint", "").strip()
+    if not ckpt_path:
+        ckpt_path = str(wts_path / "best.ckpt")
     split      = eval_cfg.get("split", "val")        # "val", "train", "all"
     save_errors = eval_cfg.get("save_errors", False)
 

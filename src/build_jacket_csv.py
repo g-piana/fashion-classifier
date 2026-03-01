@@ -45,7 +45,25 @@ GLOBAL_EXCLUDES = [
     # Non-jacket tops
     "top",
 ]
-
+FOLDER_EXCLUDES = {
+    # Biker — fabric/silhouette too blazer-like
+    "Tweed_Moto_Jacket",
+    "Waffle-Textured_Moto_Jacket",
+    "Oversized_Boucle_Moto_Jacket",
+    "Marled_Boucle_Moto_Jacket",
+    "Scuba_Knit_Moto_Jacket",
+    "Boxy_Woven_Moto_Jacket",
+    "Collarless_Moto_Jacket",
+    "Collarless_Faux_Leather_Moto_Jacket",
+    "Collarless_Quilted_Moto_Jacket",
+    "Hooded_Moto_Jacket",       # hooded bikers read as parkas/blazers
+    # Bomber — quilted leather too blazer-like
+    "Quilted_Faux_Leather_Bomber",
+    "Heathered_Scuba_Knit_Bomber_Jacket",
+    "Scuba_Knit_Bomber_Jacket",
+    "Chiffon-Sleeve_Mesh_Bomber_Jacket",  # chiffon sleeves read as blazer
+    "Embroidered_Cutout_Bomber_Jacket",   # cutouts make silhouette ambiguous
+}
 # ---------------------------------------------------------------------------
 # Keyword rules  ->  label
 #   Each rule is (label, required_keywords, excluded_keywords)
@@ -94,6 +112,12 @@ def classify_folder(folder_name: str) -> str | None:
     for excl in GLOBAL_EXCLUDES:
         if excl in name_lower:
             return None
+
+    # Normalise for comparison (handle HTML entities, hyphens etc.)
+    name_clean = folder_name.replace("&eacute;", "e").replace("-", "_")
+    if name_clean in FOLDER_EXCLUDES:
+        return None
+
 
     # Apply rules in order — first match wins
     for label, required, excluded in RULES:
