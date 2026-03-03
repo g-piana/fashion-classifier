@@ -10,14 +10,35 @@ import cv2
 IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".bmp"]
 
 
+# def find_image(folder: Path, stem: str) -> Path | None:
+#     """Find an image file by stem, trying multiple extensions."""
+#     for ext in IMAGE_EXTENSIONS:
+#         candidate = folder / f"{stem}{ext}"
+#         if candidate.exists():
+#             return candidate
+#     return None
 def find_image(folder: Path, stem: str) -> Path | None:
-    """Find an image file by stem, trying multiple extensions."""
+    """
+    Find an image file by stem.
+    1. First tries the flat folder directly (original behaviour, fast).
+    2. If not found, searches recursively one level deep (class subfolders).
+    """
+    # Fast path — flat folder
     for ext in IMAGE_EXTENSIONS:
         candidate = folder / f"{stem}{ext}"
         if candidate.exists():
             return candidate
-    return None
 
+    # Recursive fallback — one level of subfolders (e.g. biker/, blazer/, …)
+    for subfolder in folder.iterdir():
+        if not subfolder.is_dir():
+            continue
+        for ext in IMAGE_EXTENSIONS:
+            candidate = subfolder / f"{stem}{ext}"
+            if candidate.exists():
+                return candidate
+
+    return None
 
 def pad_to_square(img: np.ndarray) -> np.ndarray:
     """Pad image to square with white background, content centered."""

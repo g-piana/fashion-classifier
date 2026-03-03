@@ -1,0 +1,10 @@
+name: "jackets"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_jackets_custom.csv"
+classes:
+- "biker"
+- "blazer"
+- "bomber"
+- "fur jacket"
+- "parka"
