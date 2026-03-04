@@ -9,3 +9,10 @@ python src/build_jacket_csv.py `
 
     
 https://img01.ztat.net/article/spp-media-p1/8e75f67c3acb4ccf8193573ed8db21b0/4dc1c750bf5a485a87467595888791c6.jpg?imwidth=500
+
+
+python src/audit_zeroshot.py `
+    --image-dir "E:/fashion-data/01-RAW/jackets_women_zalando" `
+    --out-csv   "E:/fashion-data/csv/audit_zeroshot.csv" `
+    --threshold 0.5 `
+    --labelstudio   # also exports Label Studio pre-annotations

@@ -178,48 +178,79 @@ def collect_images(
 # ---------------------------------------------------------------------------
 # CLIP inference
 # ---------------------------------------------------------------------------
+# FashionCLIP must be called via model(**inputs) with BOTH image and texts
+# passed together. The model internally applies its learned temperature scale
+# to logits_per_image. Calling get_text_features/get_image_features separately
+# produces unscaled embeddings that are nearly indistinguishable — hence the
+# flat 0.49-0.50 scores we saw before.
+# ---------------------------------------------------------------------------
 
-def encode_texts(
-    processor: CLIPProcessor,
-    model: CLIPModel,
-    texts: list[str],
-    device: torch.device,
-) -> torch.Tensor:
-    """Returns L2-normalised text embeddings, shape (N, D)."""
-    inputs = processor(text=texts, return_tensors="pt", padding=True).to(device)
-    with torch.no_grad():
-        embeddings = model.get_text_features(**inputs)
-    return F.normalize(embeddings, dim=-1)
-
-
-def encode_image(
+def contrastive_score_joint(
     processor: CLIPProcessor,
     model: CLIPModel,
     image: Image.Image,
+    pos_text: str,
+    neg_text: str,
     device: torch.device,
-) -> torch.Tensor:
-    """Returns L2-normalised image embedding, shape (1, D)."""
-    inputs = processor(images=image, return_tensors="pt").to(device)
-    with torch.no_grad():
-        embedding = model.get_image_features(**inputs)
-    return F.normalize(embedding, dim=-1)
-
-
-def contrastive_score(
-    image_emb: torch.Tensor,   # (1, D)
-    pos_emb: torch.Tensor,     # (1, D)
-    neg_emb: torch.Tensor,     # (1, D)
 ) -> float:
     """
-    Softmax over [pos_sim, neg_sim] → probability the positive prompt matches.
-    This is the standard CLIP zero-shot scoring approach.
+    Pass image + [pos_text, neg_text] through the full model jointly.
+    Returns softmax probability for the positive text (0..1).
+
+    This uses model(**inputs).logits_per_image which applies the model's
+    internal logit_scale — the correct approach for FashionCLIP and all
+    standard HuggingFace CLIP checkpoints.
     """
-    sim_pos = (image_emb @ pos_emb.T).squeeze().item()   # scalar
-    sim_neg = (image_emb @ neg_emb.T).squeeze().item()   # scalar
-    # Temperature-free softmax (CLIP's logit_scale not needed for relative ranking)
-    exp_pos = np.exp(sim_pos)
-    exp_neg = np.exp(sim_neg)
-    return float(exp_pos / (exp_pos + exp_neg))
+    inputs = processor(
+        text=[pos_text, neg_text],
+        images=image,
+        return_tensors="pt",
+        padding=True,
+    ).to(device)
+
+    with torch.no_grad():
+        outputs = model(**inputs)
+
+    # logits_per_image shape: (1, 2) — similarity to [pos, neg]
+    probs = outputs.logits_per_image.softmax(dim=1)  # (1, 2)
+    return float(probs[0, 0].item())   # probability of positive text
+
+
+def run_diagnostics(
+    processor: CLIPProcessor,
+    model: CLIPModel,
+    device: torch.device,
+    image_dir: Path | None,
+) -> None:
+    """
+    Sanity-check: a jacket image should score high for jacket text
+    and low for dress text.
+    """
+    print("Running embedding diagnostics...")
+
+    if image_dir is not None:
+        img_paths = [p for p in image_dir.rglob("*")
+                     if p.suffix.lower() in IMAGE_EXTENSIONS][:1]
+        if img_paths:
+            pil = Image.open(img_paths[0]).convert("RGB")
+
+            score = contrastive_score_joint(
+                processor, model, pil,
+                pos_text="a photo of a jacket",
+                neg_text="a photo of a floral summer dress",
+                device=device,
+            )
+            print(f"  jacket_image vs [jacket / dress] → jacket prob = {score:.4f}  (expect > 0.60)")
+
+            score2 = contrastive_score_joint(
+                processor, model, pil,
+                pos_text="a jacket with a visible chest pocket",
+                neg_text="a jacket with no chest pocket",
+                device=device,
+            )
+            print(f"  jacket_image vs [chest_pocket / no_pocket] → chest_pocket prob = {score2:.4f}  (0.3-0.7 is fine)")
+
+    print()
 
 
 # ---------------------------------------------------------------------------
@@ -248,33 +279,26 @@ def run_audit(
     model.eval()
     print("Model loaded.\n")
 
-    # Pre-encode all text prompts (cached — only done once)
-    print("Encoding text prompts...")
-    attr_names  = list(attributes.keys())
-    pos_embeddings = {}
-    neg_embeddings = {}
-    for attr, prompts in attributes.items():
-        pos_embeddings[attr] = encode_texts(processor, model, [prompts["pos"]], device)
-        neg_embeddings[attr] = encode_texts(processor, model, [prompts["neg"]], device)
-    print(f"  {len(attr_names)} attributes encoded.\n")
+    run_diagnostics(processor, model, device, image_dir)
+
+    attr_names = list(attributes.keys())
 
     # Load images
     images = collect_images(image_dir, npy_dir)
     if not images:
         raise ValueError("No images found. Check --image-dir or --npy-dir.")
-    print(f"Running audit on {len(images)} images...\n")
+    print(f"Running audit on {len(images)} images, {len(attr_names)} attributes...\n")
 
-    # Score each image
+    # Score each image — joint forward pass per attribute (correct FashionCLIP usage)
     rows = []
     for stem, pil_img in tqdm(images, desc="Scoring"):
-        image_emb = encode_image(processor, model, pil_img, device)
-
         row: dict = {"name": stem}
         for attr in attr_names:
-            score = contrastive_score(
-                image_emb,
-                pos_embeddings[attr],
-                neg_embeddings[attr],
+            score = contrastive_score_joint(
+                processor, model, pil_img,
+                pos_text=attributes[attr]["pos"],
+                neg_text=attributes[attr]["neg"],
+                device=device,
             )
             row[f"{attr}_score"] = round(score, 4)
             row[f"{attr}_pred"]  = int(score >= threshold)
