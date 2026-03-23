@@ -1,0 +1,10 @@
+defaults:
+- base
+
+run: "01"
+raw_subdir: "test_01"
+image_size: 224
+max_frames: 40000
+# CLIP normalization: overrides computed training-set stats in train.py
+# Values match CLIPImageProcessor defaults
+norm_override: "clip"

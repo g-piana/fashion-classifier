@@ -300,7 +300,7 @@ def main(config: DictConfig) -> None:
             for i in range(len(all_preds))
             if all_preds[i] != all_labels[i]
         ]
-        errors_df = pd.DataFrame(errors)
+        errors_df = pd.DataFrame(errors, columns=["name", "true_label", "pred_label"])
         errors_path = out_dir / f"errors_{split}.csv"
         errors_df.to_csv(errors_path, index=False)
         print(f"\n  Misclassified : {len(errors)} / {len(eval_df)} images")
@@ -308,14 +308,17 @@ def main(config: DictConfig) -> None:
 
         # Most common confusions
         print("\n  Top confusions (true → predicted):")
-        confusion_counts = (
-            errors_df.groupby(["true_label", "pred_label"])
-            .size()
-            .reset_index(name="count")
-            .sort_values("count", ascending=False)
-            .head(10)
-        )
-        print(confusion_counts.to_string(index=False))
+        if errors_df.empty:
+            print("  None — perfect classification!")
+        else:
+            confusion_counts = (
+                errors_df.groupby(["true_label", "pred_label"])
+                .size()
+                .reset_index(name="count")
+                .sort_values("count", ascending=False)
+                .head(10)
+            )
+            print(confusion_counts.to_string(index=False))
 
     print(f"\nAll evaluation outputs → {out_dir}\n")
 

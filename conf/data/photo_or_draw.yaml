@@ -1,0 +1,7 @@
+defaults:
+- base
+
+run: "01"
+raw_subdir: "photo_or_draw_raw" # under filesystem.raw
+image_size: 224
+max_frames: 40000

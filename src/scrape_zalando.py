@@ -79,6 +79,15 @@ CATEGORY_QUERIES: dict[str, list[str]] = {
         "zalando women long parka coat",
         "zalando uk parka women fashion",
     ],
+    "trench_coat": [
+        "zalando men trench coat product",
+        "zalando mens trench coat shop",
+        "zalando men long belted coat",
+    ],
+    "fringe_dress": [
+        "zalando women fringe dress product",
+        "zalando women fringe dress shop",
+    ],
 }
 
 CATEGORY_URLS: dict[str, list[str]] = {
@@ -102,6 +111,14 @@ CATEGORY_URLS: dict[str, list[str]] = {
         "https://www.zalando.co.uk/womens-clothing-jackets-parka/",
         "https://www.zalando.co.uk/women/?q=parka+women",
     ],
+    "trench_coat": [
+        "https://www.zalando.co.uk/men",
+        "https://www.zalando.co.uk/women",
+    ],
+    "fringe_dress": [
+        "https://www.zalando.co.uk/men",
+        "https://www.zalando.co.uk/women",
+    ],
 }
 
 LABEL_MAP = {
@@ -110,6 +127,8 @@ LABEL_MAP = {
     "bomber":     "bomber",
     "fur_jacket": "fur jacket",
     "parka":      "parka",
+    "trench_coat":      "trench coat",
+    "fringe_dress":      "fringe_dress",
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

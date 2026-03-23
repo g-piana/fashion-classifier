@@ -9,12 +9,14 @@ logs/
 __pycache__/
 .hydra/
 .venv
-
+*copy.py
+*copy.*
+*.backup
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+.env
 # C extensions
 *.so
 

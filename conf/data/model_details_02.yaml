@@ -1,0 +1,4 @@
+defaults:
+- model_details # inherit everything from run 01
+
+run: "02"

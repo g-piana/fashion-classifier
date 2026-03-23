@@ -1,0 +1,11 @@
+name: "sandals"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_sandals_infer.csv"
+classes:
+- "mule"
+- "sandal"
+- "sandal-boot"
+- "slider"
+- "thong"
+- "wedge-sandal"

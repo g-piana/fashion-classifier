@@ -81,7 +81,8 @@ def main(config: DictConfig) -> None:
     raw_path = root / config.filesystem.raw / raw_sub if raw_sub else root / config.filesystem.raw
     npy_path = root / config.filesystem.npy / config.category.name / config.data.run
     csv_path = root / config.filesystem.csv / config.category.csv_file
-
+    wts_path = root / config.filesystem.weights / config.category.name / config.data.run
+    
     npy_path.mkdir(parents=True, exist_ok=True)
 
     target_size: int = config.data.image_size
@@ -101,9 +102,18 @@ def main(config: DictConfig) -> None:
     labels = pd.read_csv(csv_path)
     label_col = config.category.label_column
     valid_classes = list(config.category.classes)
+    label_type = config.category.label_type
 
     before = len(labels)
-    labels = labels[labels[label_col].isin(valid_classes)].reset_index(drop=True)
+    if label_type == "multi":
+        # Multi-label rows contain underscore-joined strings (e.g. "belted_cropped").
+        # .isin(classes) only matches exact single-class strings, dropping everything
+        # else. Keep all non-null rows — preprocess doesn't care about label content,
+        # only about which stems need a .npy file.
+        labels = labels.dropna(subset=["name"]).reset_index(drop=True)
+        labels[label_col] = labels[label_col].fillna("")
+    else:
+        labels = labels[labels[label_col].isin(valid_classes)].reset_index(drop=True)
     print(f"CSV rows: {before} total → {len(labels)} with valid labels")
     print(f"Class distribution:\n{labels[label_col].value_counts().to_string()}\n")
 
@@ -150,7 +160,14 @@ def main(config: DictConfig) -> None:
     print(f"  Skipped/failed  : {skipped}")
     print(f"  Total available : {total}")
     print(f"  Output          : {npy_path}")
-
+    # If new images were processed, invalidate cached normalization
+    # so train.py recomputes it from the updated training set
+    if processed > 0:
+        norm_path = wts_path / "normalization.npy"
+        if norm_path.exists():
+            norm_path.unlink()
+            print(f"\n  Normalization cache invalidated ({processed} new images added)")
+            print(f"  It will be recomputed on next train.py run.")
 
 if __name__ == "__main__":
     main()

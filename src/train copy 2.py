@@ -201,7 +201,6 @@ def main(config: DictConfig) -> None:
             normalization = compute_normalization(
                 stems=train_df["name"].tolist(),
                 npy_root=npy_path,
-                config=config,
             )
             np.save(norm_path, normalization)
 
@@ -319,41 +318,27 @@ def main(config: DictConfig) -> None:
     )
 
     # ------------------------------------------------------------------ #
-    # 10. Optionally load weights from a previous run (Stage 2 fine-tuning)
-    # ------------------------------------------------------------------ #
-    # Using finetune_from loads ONLY the model weights from the source
-    # checkpoint, discarding optimizer state and epoch counter entirely.
-    # This gives Stage 2 a warm weight initialisation while letting the
-    # new optimizer start fresh at the lower learning rate — which is
-    # correct behaviour when unfreezing layers or changing lr significantly.
-    finetune_from = config.training.get("finetune_from", None)
-    if finetune_from:
-        source_ckpt = wts_path.parent / finetune_from / "best.ckpt"
-        if not source_ckpt.exists():
-            raise FileNotFoundError(
-                f"finetune_from='{finetune_from}' specified but checkpoint not found: {source_ckpt}"
-            )
-        # Load weights only — no optimizer state, no epoch counter
-        state = torch.load(str(source_ckpt), map_location="cpu")
-        missing, unexpected = model.load_state_dict(state["state_dict"], strict=True)
-        if missing:
-            print(f"  WARNING: missing keys when loading checkpoint: {missing}")
-        print(f"  Weights loaded from: {source_ckpt}")
-        print(f"  Optimizer state and epoch counter reset (fresh Stage 2 start)\n")
-
-    # ------------------------------------------------------------------ #
-    # 11. Train
+    # 10. Train
     # ------------------------------------------------------------------ #
     print(f"Starting training — max {config.training.max_epochs} epochs "
-          f"(early stopping patience={config.training.early_stopping_patience})")
+        f"(early stopping patience={config.training.early_stopping_patience})")
     print(f"Monitor        : {config.training.checkpoint_metric} ({config.training.checkpoint_mode})")
     print(f"Checkpoint     → {wts_path}/best.ckpt\n")
 
-    trainer.fit(model, train_loader, val_loader)
+    # Optional: resume/finetune from a previous run's checkpoint
+    finetune_from = config.training.get("finetune_from", None)
+    ckpt_path = None
+    if finetune_from:
+        source_ckpt = wts_path.parent / finetune_from / "best.ckpt"
+        if source_ckpt.exists():
+            ckpt_path = str(source_ckpt)
+            print(f"Fine-tuning from checkpoint: {ckpt_path}\n")
+        else:
+            raise FileNotFoundError(
+                f"finetune_from='{finetune_from}' specified but checkpoint not found: {source_ckpt}"
+            )
 
-    print(f"\nBest checkpoint : {checkpoint_cb.best_model_path}")
-    print(f"Best {config.training.checkpoint_metric} : "
-          f"{checkpoint_cb.best_model_score:.4f}")
+    trainer.fit(model, train_loader, val_loader, ckpt_path=ckpt_path)
 
 
 if __name__ == "__main__":

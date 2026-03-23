@@ -5,4 +5,5 @@ defaults:
 - data: base
 - filesystem: local
 - evaluate: default
+- infer: default
 - _self_

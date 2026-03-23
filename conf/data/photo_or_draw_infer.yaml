@@ -1,0 +1,7 @@
+defaults:
+- base
+
+run: "infer" # writes npy to npy/photo_or_draw/infer/
+raw_subdir: "photo_or_draw_raw/infer"
+image_size: 224
+max_frames: 40000

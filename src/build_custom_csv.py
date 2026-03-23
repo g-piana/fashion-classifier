@@ -51,7 +51,8 @@ def build_csv(src: Path, csv_path: Path, label_col: str) -> None:
     stems_seen: set[str] = set()
 
     for subfolder in sorted(src.iterdir()):
-        if not subfolder.is_dir():
+
+        if not subfolder.is_dir() or subfolder.stem == 'infer':
             continue
 
         label = LABEL_OVERRIDES.get(subfolder.name, subfolder.name)

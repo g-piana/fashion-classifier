@@ -1,0 +1,5 @@
+checkpoint: "" # defaults to weights/category/run/best.ckpt
+npy_dir: "" # defaults to npy/category/run
+norm_path: "" # defaults to weights/category/run/normalization.npy
+out_csv: "" # defaults to csv/predictions_<category>.csv
+batch_size: 64

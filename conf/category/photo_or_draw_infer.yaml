@@ -1,0 +1,7 @@
+name: "photo_or_draw"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_photo_or_draw_infer.csv"
+classes:
+- "drawing"
+- "photo"

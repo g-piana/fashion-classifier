@@ -1,0 +1,67 @@
+comma-heel:
+- comma heel
+- comma-heel
+- spindle heel
+- spindle-heel
+- flared heel
+- flared-heel
+- sculpted heel
+- sculptural heel
+- tapered comma heel
+- hourglass heel
+- spool heel
+- kitten heel
+- kitten-heel
+
+stiletto-heel:
+- stiletto heel
+- stiletto-heel
+- needle heel
+- pin heel
+
+wedge-heel:
+- wedge heel
+- wedge-heel
+- wedge
+
+flat-heel:
+- flat heel
+- flat-heel
+- flat
+- no heel
+
+boulevard-heel:
+- boulevard heel
+- boulevard-heel
+- flared base heel
+
+french-heel:
+- french heel
+- french-heel
+- louis heel
+- louis-heel
+
+mid-heel:
+- mid heel
+- mid-heel
+- block heel # catches Claude's likely term for mid-range blocks
+- chunky heel
+- square heel # square-heel now maps here
+- square-heel
+- cone heel
+- cone-heel
+- low cone heel
+- mid cone heel
+- low cone-heel
+- mid cone-heel
+
+high-heel:
+- high heel
+- high-heel
+
+low-heel:
+- low heel
+- low-heel
+
+# fallback: if nothing matches, keep raw term and flag for review
+_unknown: []

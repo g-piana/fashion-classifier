@@ -1,0 +1,84 @@
+bead, 
+bow, 
+chain, 
+crystal, 
+embroidery, 
+eyelet, 
+feather, 
+flower, 
+fringe, 
+fur, 
+lace, 
+logo, 
+mesh-insert, 
+pearl, 
+pom-pom, 
+ribbon, 
+sequin, 
+stud, 
+tassel
+
+        <Choice value="bead"
+          hint="Small decorative beads applied to the upper. Individual beaded elements, not rhinestones or crystals." />
+
+        <Choice value="bow"
+          hint="A bow or bow-tie shaped decorative element. Fabric, ribbon or leather with two loops and a knot or centre." />
+
+        <Choice value="buckle"
+          hint="A decorative buckle for ornamental purposes — oversized statement buckles or buckles in non-closing positions. NOT plain functional ankle-strap buckles." />
+
+        <Choice value="chain"
+          hint="Metal or decorative chain as trim, strap or ornamental detail. Chain-link trim along edges, chain ankle straps or chain tassels." />
+
+        <Choice value="crystal"
+          hint="Faceted decorative stones: rhinestones, crystals, diamantés or gemstones. Any sparkling faceted stone, genuine or synthetic, single accent or full coverage." />
+
+        <Choice value="embroidery"
+          hint="Decorative stitching forming patterns or motifs on the upper. Visible needlework — NOT a woven or printed pattern." />
+
+        <Choice value="eyelet"
+          hint="Metal or reinforced punched holes as decorative detail. Grommets or eyelets used ornamentally — a row along an edge or as surface detail." />
+
+        <Choice value="feather"
+          hint="Real or synthetic feathers as trim or decoration. Fluffy, quill-like or plume-shaped elements at toe, ankle or heel." />
+
+        <Choice value="flower"
+          hint="Floral appliqué, fabric flowers or 3D flower-shaped embellishments. Physical raised or appliqué element — NOT a floral print or pattern." />
+
+        <Choice value="fringe"
+          hint="Hanging strips of leather, suede or fabric along an edge. Multiple individual strips — NOT a tassel (single gathered bunch)." />
+
+        <Choice value="fur"
+          hint="Real or faux fur as trim or upper material. Fur pompoms at toe, fur collar at ankle, or fur-lined trim visible on the exterior." />
+
+        <Choice value="lace"
+          hint="Lace fabric as upper material or decorative overlay. Clearly visible openwork lace pattern — NOT shoelaces." />
+
+        <Choice value="logo"
+          hint="Visible brand logo, monogram or lettering as a design element. Embossed logos, metal logo plates or repeat logo patterns." />
+
+        <Choice value="mesh-insert"
+          hint="A section of mesh, net or open-weave fabric inserted into the upper. Visible grid or net texture — athletic mesh, fishnet or decorative net panel." />
+
+        <Choice value="pearl"
+          hint="Pearl or pearl-like spherical decorative elements. Round, non-faceted, lustrous appearance — genuine or faux pearls." />
+
+        <Choice value="pom-pom"
+          hint="A fluffy ball-shaped decoration of yarn, fur or fabric fibres. Distinct round ball — typically at the toe of mules or slides." />
+
+        <Choice value="ribbon"
+          hint="Ribbon used as decorative trim, bow or tie detail. Satin or grosgrain ribbon as decoration — NOT functional shoelaces." />
+
+        <Choice value="sequin"
+          hint="Small shiny flat disc-shaped elements on the upper. Creates a glittery surface — flat discs, NOT faceted stones." />
+
+        <Choice value="stud"
+          hint="Metal studs, spikes or rivet-like elements on the upper. Pyramid studs, dome studs or decorative rivets. Common on biker-style designs." />
+
+        <Choice value="tassel"
+          hint="A hanging bunch of threads, cords or leather strips tied at the top. Single gathered bunch — NOT fringe (strips along an edge)." />
+
+        <Choice value="zipper"
+          hint="A zipper as a visible decorative design element. Exposed contrast zippers or zippers in non-functional positions — NOT a plain boot closure." />
+
+      </Choices>

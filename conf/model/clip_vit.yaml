@@ -1,0 +1,6 @@
+backbone: "clip_vit"
+pretrained: true
+freeze_backbone: true
+clip_model_id: "patrickjohncyh/fashion-clip"
+clip_unfreeze_layers: 0
+in_channels: 3

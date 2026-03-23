@@ -1,0 +1,9 @@
+defaults:
+- multilabel
+
+max_epochs: 40
+learning_rate: 1e-5
+freeze_backbone: false
+clip_unfreeze_layers: 3
+early_stopping_patience: 10
+finetune_from: "01"

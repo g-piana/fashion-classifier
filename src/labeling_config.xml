@@ -1,0 +1,41 @@
+<View style="display: flex; gap: 16px; align-items: flex-start;">
+
+  <!-- Left column: image -->
+  <View style="flex: 0 0 420px;">
+    <Image name="image" value="$image" zoom="true" zoomControl="true"
+           style="max-width: 420px;"/>
+  </View>
+
+  <!-- Right column: labels -->
+  <View style="flex: 1; padding: 8px;">
+
+    <Header value="Model Details"/>
+    <Choices name="model_details" toName="image" choice="multiple" showInLine="false">
+      <Choice value="ankle_length" hint="Hem reaches ankle or floor level"/>
+      <Choice value="asymmetric"   hint="Asymmetric hem, collar, or zip closure"/>
+      <Choice value="belted"       hint="Visible belt, sash, or waist tie"/>
+      <Choice value="chest_pocket" hint="Visible pocket on chest or bust area"/>
+      <Choice value="cropped"      hint="Hem ends at or above the natural waist"/>
+      <Choice value="drawstring"   hint="Visible drawstring at hood, hem, or waist"/>
+      <Choice value="epaulette"    hint="Fabric tabs or straps on the shoulder seams"/>
+    </Choices>
+
+    <Header value="Embellishments"/>
+    <Choices name="embellishments" toName="image" choice="multiple" showInLine="false">
+      <Choice value="embroidery" hint="Stitched decorative patterns or needlework"/>
+      <Choice value="eyelet"     hint="Metal or fabric punched holes or grommets"/>
+      <Choice value="feather"    hint="Real or faux feather trim or decoration"/>
+      <Choice value="flower"     hint="3D floral applique or fabric flowers"/>
+      <Choice value="fringe"     hint="Hanging strips, tassels, or frayed edge trim"/>
+    </Choices>
+
+    <Header value="Image Quality"/>
+    <Choices name="quality" toName="image" choice="single" showInLine="true">
+      <Choice value="ok"      hint="Clear product shot, garment fully visible"/>
+      <Choice value="partial" hint="Garment partially obscured or cropped"/>
+      <Choice value="reject"  hint="Wrong garment type or very poor quality"/>
+    </Choices>
+
+  </View>
+
+</View>

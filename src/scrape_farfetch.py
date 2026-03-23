@@ -58,6 +58,21 @@ from pathlib import Path
 
 # Bing search queries — multiple per category for diversity
 CATEGORY_QUERIES: dict[str, list[str]] = {
+    "feather_heels": ["feather trim heels",
+                    "fur mules", 
+                    "fringe boots", 
+                    "pom pom sandals"     
+    ],
+    "beaded_heels": ["sequin heels",
+                    "beaded sandals", 
+                    "embroidered mules", 
+                    "embroidered shoes"     
+    ],
+    "zipper_boots": ["decorative zipper boots",
+                    "decorative zipper shoes",
+                    "fringe boots", 
+                    "fringe shoes", 
+    ],
     "biker": [
         "farfetch women biker jacket leather product",
         "farfetch womens moto jacket faux leather shop",
@@ -93,6 +108,38 @@ CATEGORY_QUERIES: dict[str, list[str]] = {
         "farfetch womens hooded bolero shop",
         "farfetch uk bolero women fashion",
     ],
+    "trench_coat": [
+        "farfetch men trench coats product photo",
+        "farfetch womens trench coats raincoats shop",
+        "farfetch burberry trench coats raincoats women fashion",
+        "farfetch burberry trench coats raincoats men fashion",
+    ],
+    "cropped": [
+        "farfetch women cropped jackets product photo",
+        "farfetch women cropped jackets shop",
+    ],  
+    "fringe_jacket": [
+        "farfetch women fringe jacket product photo",
+        "farfetch women fringed jacket shop",
+        "farfetch men fringe jacket product photo",
+        "farfetch men fringed jacket shop",
+    ],
+    "feather_jacket": [
+        "farfetch women feather-trim feather jacket product photo",
+        "farfetch women feather-trim feather jacket shop",
+    ],      
+    "floral_jacket": [
+        "farfetch women floral appliqué flower-appliqué jacket product photo",
+        "farfetch women floral appliqué flower-appliqué jacket shop",
+    ],   
+    "belted": [
+        "farfetch women belt-waist jacket product photo",
+        "farfetch women belt-waist jacket shop",
+        "farfetch men belt-waist jacket product photo",
+        "farfetch men belt-waist jacket shop",
+
+    ],          
+    
 }
 
 # Direct Farfetch category pages — used in headed mode
@@ -118,8 +165,39 @@ CATEGORY_URLS: dict[str, list[str]] = {
         "https://www.farfetch.com/shopping/women/parka-jackets-1/items.aspx",
         "https://www.farfetch.com/shopping/women/down-jackets-1/items.aspx",
     ],
-    "bolero": [
-        "https://www.farfetch.com/shopping/women/bolero-jackets-1/items.aspx",
+    "trench_coat": [
+        "https://www.farfetch.com/shopping/men/trench-coats-2/items.aspx",
+        "https://www.farfetch.com/it/shopping/women/trench-raincoat-1/items.aspx"
+    ],
+    "cropped": [
+        "https://www.farfetch.com/it/shopping/women/cropped-jackets-1/items.aspx",
+    ],
+    "fringe_jacket": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx",
+        "https://www.farfetch.com/it/shopping/men/search/items.aspx",
+    ],
+    "feather_jacket": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx",
+    ],
+    "floral_jacket": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx",
+    ],
+    "belted": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx",
+        "https://www.farfetch.com/it/shopping/men/search/items.aspx",
+    ],
+    "feather_heels": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx"
+        
+    ],
+    "beaded_heels": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx"
+        
+    ],
+    "zipper_boots": [
+        "https://www.farfetch.com/it/shopping/women/search/items.aspx",
+        "https://www.farfetch.com/it/shopping/men/search/items.aspx"
+        
     ],
 }
 
@@ -131,6 +209,13 @@ LABEL_MAP = {
     "fur_jacket": "fur jacket",
     "parka":      "parka",
     "bolero":      "bolero",
+    "trench_coat": "trench coat",
+    "cropped": "cropped",
+    "fringe_jacket": "fringe jacket",
+    "belted": "belted",
+    "feather_heels": "feather heels",
+    "beaded_heels": "beaded heels",
+        "zipper_boots": "zipper boots",
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

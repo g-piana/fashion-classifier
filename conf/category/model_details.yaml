@@ -1,0 +1,9 @@
+name: "model_details"
+label_column: "attributes"
+label_type: "multi"
+csv_file: "labels_model_details.csv"
+classes:
+- "asymmetric"
+- "belted"
+- "cropped"
+- "epaulette"
