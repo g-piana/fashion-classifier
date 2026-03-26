@@ -17,11 +17,35 @@ IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".bmp"]
 #         if candidate.exists():
 #             return candidate
 #     return None
+# def find_image(folder: Path, stem: str) -> Path | None:
+#     """
+#     Find an image file by stem.
+#     1. First tries the flat folder directly (original behaviour, fast).
+#     2. If not found, searches recursively one level deep (class subfolders).
+#     """
+#     # Fast path — flat folder
+#     for ext in IMAGE_EXTENSIONS:
+#         candidate = folder / f"{stem}{ext}"
+#         if candidate.exists():
+#             return candidate
+
+#     # Recursive fallback — one level of subfolders (e.g. biker/, blazer/, …)
+#     for subfolder in folder.iterdir():
+#         if not subfolder.is_dir():
+#             continue
+#         for ext in IMAGE_EXTENSIONS:
+#             candidate = subfolder / f"{stem}{ext}"
+#             if candidate.exists():
+#                 return candidate
+
+#     return None
 def find_image(folder: Path, stem: str) -> Path | None:
     """
     Find an image file by stem.
-    1. First tries the flat folder directly (original behaviour, fast).
-    2. If not found, searches recursively one level deep (class subfolders).
+    1. Fast path: checks the flat folder directly.
+    2. Fallback: searches recursively through ALL nested subfolders (any depth).
+       Handles both single-level (category/images) and two-level
+       (category/subcategory/images) layouts.
     """
     # Fast path — flat folder
     for ext in IMAGE_EXTENSIONS:
@@ -29,14 +53,10 @@ def find_image(folder: Path, stem: str) -> Path | None:
         if candidate.exists():
             return candidate
 
-    # Recursive fallback — one level of subfolders (e.g. biker/, blazer/, …)
-    for subfolder in folder.iterdir():
-        if not subfolder.is_dir():
-            continue
-        for ext in IMAGE_EXTENSIONS:
-            candidate = subfolder / f"{stem}{ext}"
-            if candidate.exists():
-                return candidate
+    # Deep recursive fallback — works for 1-level and 2-level subfolder layouts
+    for candidate in folder.rglob(f"{stem}.*"):
+        if candidate.is_file() and candidate.suffix.lower() in IMAGE_EXTENSIONS:
+            return candidate
 
     return None
 

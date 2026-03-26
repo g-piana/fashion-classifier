@@ -1,0 +1,11 @@
+name: "sandals_sub"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_sandals_sub.csv"
+classes:
+- "mule" # same name as heeled — no conflict, different model
+- "sandal"
+- "sandal-boot"
+- "slider"
+- "thong"
+- "wedge-sandal"

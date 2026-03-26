@@ -1,0 +1,9 @@
+name: "boots_sub"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_boots_sub.csv"
+classes:
+- "ankle-boot"
+- "boot"
+- "lace-up-boot"
+- "over-the-knee"

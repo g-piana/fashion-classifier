@@ -1,0 +1,6 @@
+# conf/cascade_infer/default.yaml
+# Override any of these at the CLI with cascade_infer.<key>=<value>
+
+npy_dir:    ""   # defaults to npy/{stage1.name}/{stage1.run}/
+out_csv:    ""   # defaults to csv/predictions_shoes_cascade.csv
+batch_size: 64

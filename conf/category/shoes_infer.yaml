@@ -1,0 +1,20 @@
+# conf/category/shoes_infer.yaml
+# ---------------------------------------------------------------
+# Category config for shoes cascade inference on unlabelled images.
+#
+# The classes list must match shoes_category exactly — preprocess.py
+# uses label_type=single to filter the CSV, but since all rows carry
+# the placeholder "unknown" they would be dropped. We set label_type
+# to "multi" so preprocess.py keeps ALL rows regardless of label value.
+# ---------------------------------------------------------------
+
+name: "shoes_category"          # reuses the same npy/weights namespace as training
+label_column: "Class"
+label_type: "multi"             # keeps all rows even with placeholder labels
+csv_file: "labels_shoes_infer.csv"
+classes:
+  - "boots-and-booties-women"
+  - "flat-shoes-women"
+  - "heeled-shoes-women"
+  - "sandals-women"
+  - "sneakers-women"

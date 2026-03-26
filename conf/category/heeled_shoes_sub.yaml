@@ -1,0 +1,13 @@
+name: "heeled_shoes_sub"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_heeled_shoes_sub.csv"
+classes:
+- "d-orsay-pump"
+- "lace-up"
+- "loafer-pump"
+- "mary-jane-pump"
+- "mule"
+- "pump"
+- "slingback"
+- "wedge-pump"

@@ -1,0 +1,12 @@
+name: "flat_shoes_sub"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_flat_shoes_sub.csv"
+classes:
+- "ballerina"
+- "d-orsay-flat"
+- "lace-up"
+- "loafer"
+- "other-flat-shoes"
+- "slip-on"
+- "slipper"

@@ -1,0 +1,82 @@
+# conf/cascade/shoes.yaml
+# ---------------------------------------------------------------
+# Cascading inference: category → subcategory for the shoes domain.
+#
+# stage1        : the top-level category classifier
+# stage2_map    : maps each category label to its subcategory model
+#
+# Each entry under stage1 / stage2_map mirrors the category config:
+#   name        : category.name  (used to resolve npy / weights paths)
+#   run         : data.run
+#   classes     : must match the classes the model was trained with
+#
+# Paths follow the standard filesystem convention:
+#   npy       : {root}/{npy}/{name}/{run}/
+#   weights   : {root}/{weights}/{name}/{run}/best.ckpt
+#   norm      : {root}/{weights}/{name}/{run}/normalization.npy
+# ---------------------------------------------------------------
+
+stage1:
+  name: "shoes_category"
+  run: "01" # training run — used to resolve weights + normalization
+  infer_run: "infer" # inference run — used to resolve the npy directory
+  classes:
+  - "boots-and-booties-women"
+  - "flat-shoes-women"
+  - "heeled-shoes-women"
+  - "sandals-women"
+  - "sneakers-women"
+
+stage2_map:
+  boots-and-booties-women:
+    name: "boots_sub"
+    run: "01"
+    classes:
+    - "ankle-boot"
+    - "boot"
+    - "lace-up-boot"
+    - "over-the-knee"
+    - shoe-boot
+
+  flat-shoes-women:
+    name: "flat_shoes_sub"
+    run: "01"
+    classes:
+    - "ballerina"
+    - "d-orsay-flat"
+    - "lace-up"
+    - "loafer"
+    - "other-flat-shoes"
+    - "slip-on"
+    - "slipper"
+
+  heeled-shoes-women:
+    name: "heeled_shoes_sub"
+    run: "01"
+    classes:
+    - "d-orsay-pump"
+    - "lace-up"
+    - "loafer-pump"
+    - "mary-jane-pump"
+    - "mule"
+    - "pump"
+    - "slingback"
+    - "wedge-pump"
+
+  sandals-women:
+    name: "sandals_sub"
+    run: "01"
+    classes:
+    - "mule" # same name as heeled — no conflict, different model
+    - "sandal"
+    - "slider"
+    - "thong"
+    - "wedge-sandal"
+    - "sandal-boot"
+
+  sneakers-women:
+    name: "sneakers_sub"
+    run: "01"
+    classes:
+    - "high-top-sneaker"
+    - "sneaker"

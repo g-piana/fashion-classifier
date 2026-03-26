@@ -6,4 +6,6 @@ defaults:
 - filesystem: local
 - evaluate: default
 - infer: default
+- cascade: ??? # (??? means optional, only needed for infer_cascade.py)
+- cascade_infer: default
 - _self_

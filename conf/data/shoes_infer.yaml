@@ -1,0 +1,21 @@
+# conf/data/shoes_infer.yaml
+# ---------------------------------------------------------------
+# Data config for shoes cascade inference on unlabelled images.
+#
+# run: "infer" keeps inference npy files in a separate directory
+#   npy/shoes_category/infer/
+# so they never pollute the training npy (npy/shoes_category/01/).
+#
+# raw_subdir points to wherever you place the new unlabelled images,
+# relative to filesystem.raw (E:/fashion-data/01-RAW/).
+# Override at CLI if needed:
+#   data.raw_subdir="nillab_01/infer_batch_02"
+# ---------------------------------------------------------------
+
+defaults:
+- base
+
+run: "infer"
+raw_subdir: "nillab_01/photo" # E:/fashion-data/01-RAW/nillab_01/infer/
+image_size: 224 # must match training image_size
+max_frames: 100000 # high cap — process everything

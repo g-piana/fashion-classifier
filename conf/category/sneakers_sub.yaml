@@ -1,0 +1,7 @@
+name: "sneakers_sub"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_sneakers_sub.csv"
+classes:
+- "high-top-sneaker"
+- "sneaker"

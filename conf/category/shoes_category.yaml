@@ -1,0 +1,10 @@
+name: "shoes_category"
+label_column: "Class"
+label_type: "single"
+csv_file: "labels_shoes_category.csv"
+classes:
+- "boots-and-booties-women"
+- "flat-shoes-women"
+- "heeled-shoes-women"
+- "sandals-women"
+- "sneakers-women"
