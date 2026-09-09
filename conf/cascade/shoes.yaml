@@ -14,6 +14,9 @@
 #   npy       : {root}/{npy}/{name}/{run}/
 #   weights   : {root}/{weights}/{name}/{run}/best.ckpt
 #   norm      : {root}/{weights}/{name}/{run}/normalization.npy
+#
+# IMPORTANT: class order MUST exactly match conf/category/<name>.yaml
+# Do not reorder — index position = model output neuron
 # ---------------------------------------------------------------
 
 stage1:
@@ -36,7 +39,6 @@ stage2_map:
     - "boot"
     - "lace-up-boot"
     - "over-the-knee"
-    - shoe-boot
 
   flat-shoes-women:
     name: "flat_shoes_sub"
@@ -69,10 +71,10 @@ stage2_map:
     classes:
     - "mule" # same name as heeled — no conflict, different model
     - "sandal"
+    - "sandal-boot"
     - "slider"
     - "thong"
     - "wedge-sandal"
-    - "sandal-boot"
 
   sneakers-women:
     name: "sneakers_sub"
