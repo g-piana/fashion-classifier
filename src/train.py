@@ -13,7 +13,7 @@ from pathlib import Path
 
 from dataset import FashionDataset
 from model import FashionClassifier
-
+from manifest import write_manifest
 
 CLIP_MEAN = [0.48145466, 0.4578275,  0.40821073]
 CLIP_STD  = [0.26862954, 0.26130258, 0.27577711]
@@ -118,9 +118,10 @@ def main(config: DictConfig) -> None:
     # 1. Resolve paths
     # ------------------------------------------------------------------ #
     root     = Path(config.filesystem.root)
-    npy_path = root / config.filesystem.npy / config.category.name / config.data.run
-    csv_path = root / config.filesystem.csv / config.category.csv_file
+    npy_run  = config.data.get("npy_run", None) or config.data.run
+    npy_path = root / config.filesystem.npy     / config.category.name / npy_run
     wts_path = root / config.filesystem.weights / config.category.name / config.data.run
+    csv_path = root / config.filesystem.csv / config.category.csv_file
     wts_path.mkdir(parents=True, exist_ok=True)
 
     # ------------------------------------------------------------------ #
@@ -353,7 +354,12 @@ def main(config: DictConfig) -> None:
 
     print(f"\nBest checkpoint : {checkpoint_cb.best_model_path}")
     print(f"Best {config.training.checkpoint_metric} : "
-          f"{checkpoint_cb.best_model_score:.4f}")
+        f"{checkpoint_cb.best_model_score:.4f}")
+
+    # ------------------------------------------------------------------ #
+    # 12. Write manifest — makes checkpoint self-describing
+    # ------------------------------------------------------------------ #
+    write_manifest(wts_path, config, trainer, checkpoint_cb)
 
 
 if __name__ == "__main__":

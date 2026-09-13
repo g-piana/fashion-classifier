@@ -99,9 +99,11 @@ def main(config: DictConfig) -> None:
     root     = Path(config.filesystem.root)
     raw_sub  = config.data.get("raw_subdir", "")
     raw_path = root / config.filesystem.raw / raw_sub if raw_sub else root / config.filesystem.raw
-    npy_path = root / config.filesystem.npy / config.category.name / config.data.run
-    csv_path = root / config.filesystem.csv / config.category.csv_file
+    npy_run  = config.data.get("npy_run", None) or config.data.run
+    npy_path = root / config.filesystem.npy     / config.category.name / npy_run
     wts_path = root / config.filesystem.weights / config.category.name / config.data.run
+
+    csv_path = root / config.filesystem.csv / config.category.csv_file
     
     npy_path.mkdir(parents=True, exist_ok=True)
 

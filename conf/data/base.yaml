@@ -5,3 +5,4 @@ source_type: "all"
 subset_type: "train"
 image_size: 224 # target square size in pixels
 raw_subdir: ""
+npy_run: null # npy cache run — defaults to `run` if null (images unchanged between runs)
