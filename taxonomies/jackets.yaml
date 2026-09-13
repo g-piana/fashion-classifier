@@ -1,0 +1,32 @@
+# taxonomies/jackets.yaml
+# ═══════════════════════════════════════════════════════════════════════════
+# Taxonomy definition for the jackets domain.
+#
+# Single-stage domain — no subcategory cascade.
+# stage2_map is empty: inference runs only the category classifier
+# and returns category + confidence directly.
+#
+# To add subcategories later (e.g. biker → zipper-biker, snap-biker):
+#   1. Add a stage2_map entry for the relevant category
+#   2. Train a subcategory model
+#   No other files need changing.
+# ═══════════════════════════════════════════════════════════════════════════
+
+domain: jackets
+image_size: 224
+backbone: resnet50
+
+stage1:
+  model_name: jackets
+  run: "02"
+  npy_run: "02"
+  label_column: Class
+  csv_file: labels_jackets.csv
+  classes:
+  - biker
+  - blazer
+  - bomber
+  - fur jacket
+  - parka
+
+stage2_map: {} # no subcategory models yet

@@ -1,0 +1,110 @@
+# taxonomies/shoes.yaml
+# ═══════════════════════════════════════════════════════════════════════════
+# Taxonomy definition for the shoes domain.
+#
+# This file is the SINGLE SOURCE OF TRUTH for:
+#   - The category class list (stage-1 model output vocabulary)
+#   - The subcategory class list per category (stage-2 model output vocabulary)
+#   - Which model name and run to use for each stage
+#   - The npy_run (which preprocessed image cache to load from)
+#
+# Files that previously duplicated this information:
+#   conf/category/shoes_category.yaml     → reads stage1.classes
+#   conf/category/boots_sub.yaml          → reads stage2_map.*.classes
+#   conf/cascade/shoes.yaml               → will be auto-generated from this
+#
+# Adding a new category (e.g. moccasin):
+#   1. Add "moccasin" to stage1.classes
+#   2. Add a stage2_map entry for it
+#   3. Collect training data and run train.py for the new subcategory model
+#   No other files need changing.
+#
+# Adding a new domain (e.g. bags):
+#   Create taxonomies/bags.yaml following this same structure.
+# ═══════════════════════════════════════════════════════════════════════════
+
+domain: shoes
+image_size: 224
+backbone: resnet50         # default backbone — can be overridden per stage
+
+stage1:
+  model_name: shoes_category   # maps to weights/shoes_category/{run}/
+  run: "02"                    # training run to load at inference
+  npy_run: "01"                # npy cache run (images unchanged between runs)
+  label_column: Class
+  csv_file: labels_shoes_category.csv
+  classes:
+    - boots-and-booties-women
+    - flat-shoes-women
+    - heeled-shoes-women
+    - sandals-women
+    - sneakers-women
+
+stage2_map:
+
+  boots-and-booties-women:
+    model_name: boots_sub
+    run: "02"
+    npy_run: "01"
+    label_column: Class
+    csv_file: labels_boots_sub.csv
+    classes:
+      - ankle-boot
+      - boot
+      - lace-up-boot
+      - over-the-knee
+
+  flat-shoes-women:
+    model_name: flat_shoes_sub
+    run: "02"
+    npy_run: "01"
+    label_column: Class
+    csv_file: labels_flat_shoes_sub.csv
+    classes:
+      - ballerina
+      - d-orsay-flat
+      - lace-up
+      - loafer
+      - other-flat-shoes
+      - slip-on
+      - slipper
+
+  heeled-shoes-women:
+    model_name: heeled_shoes_sub
+    run: "02"
+    npy_run: "01"
+    label_column: Class
+    csv_file: labels_heeled_shoes_sub.csv
+    classes:
+      - d-orsay-pump
+      - lace-up
+      - loafer-pump
+      - mary-jane-pump
+      - mule
+      - pump
+      - slingback
+      - wedge-pump
+
+  sandals-women:
+    model_name: sandals_sub
+    run: "02"
+    npy_run: "01"
+    label_column: Class
+    csv_file: labels_sandals_sub.csv
+    classes:
+      - mule           # same label as heeled — no conflict, different model
+      - sandal
+      - sandal-boot
+      - slider
+      - thong
+      - wedge-sandal
+
+  sneakers-women:
+    model_name: sneakers_sub
+    run: "02"
+    npy_run: "01"
+    label_column: Class
+    csv_file: labels_sneakers_sub.csv
+    classes:
+      - high-top-sneaker
+      - sneaker
