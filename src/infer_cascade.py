@@ -174,11 +174,15 @@ def main(config: DictConfig) -> None:
     s1_classes  = list(stage1.classes)
 
     # Output CSV
-    out_csv = Path(infer_cfg.get("out_csv", "") or
-                   root / config.filesystem.csv / "predictions_shoes_cascade.csv")
+    domain_slug = getattr(cascade_cfg, "domain", stage1.name) 
+    out_csv = Path(infer_cfg.get("out_csv", "") or root / config.filesystem.csv / f"predictions_{domain_slug}_cascade.csv")
+
+    
+    domain_name = getattr(cascade_cfg, "domain", stage1.name) 
+    
 
     print(f"\n{'='*60}")
-    print(f"Cascade inference — shoes domain")
+    print(f"Cascade inference — domain: {domain_name}")
     print(f"Device       : {device}")
     print(f"Stage-1 model: {stage1.name}  (run {stage1.run})")
     print(f"Stage-1 npy  : {s1_npy_dir}")
