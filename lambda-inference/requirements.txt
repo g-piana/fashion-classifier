@@ -1,0 +1,13 @@
+# CPU-only PyTorch — the GPU wheel (~2.5 GB) is pointless on Lambda
+# Install from the PyTorch CPU index to avoid pulling the CUDA variant
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.3.1+cpu
+torchvision==0.18.1+cpu
+
+# Image handling
+opencv-python-headless==4.9.0.80
+Pillow==10.3.0
+numpy==1.26.4
+
+# AWS SDK (already present in Lambda runtime but explicit = reproducible)
+boto3==1.34.0

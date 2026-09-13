@@ -1,7 +1,7 @@
 name: "jackets"
 label_column: "Class"
 label_type: "single"
-csv_file: "labels_jackets_custom.csv"
+csv_file: "labels_jackets_custom_02.csv"
 classes:
 - "biker"
 - "blazer"

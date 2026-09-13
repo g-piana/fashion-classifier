@@ -148,7 +148,7 @@ def main(config: DictConfig) -> None:
     # ------------------------------------------------------------------ #
     # 1. Resolve cascade config and infer overrides
     # ------------------------------------------------------------------ #
-    if "cascade" not in config:
+    if not config.get("cascade"):
         raise ValueError(
             "No cascade config found.\n"
             "Run with:  python src/infer_cascade.py cascade=shoes"
