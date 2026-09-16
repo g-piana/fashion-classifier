@@ -78,6 +78,7 @@ from registry import (
     load_taxonomy,
     resolve_taxonomy_checkpoints,
 )
+from vlm_tagger import load_vlm_config, tag_images
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -386,6 +387,13 @@ def main() -> None:
     p.add_argument("--taxonomies-root", type=Path, default=DEFAULT_TAXONOMIES_ROOT)
     p.add_argument("--weights-root",    type=Path, default=DEFAULT_WEIGHTS_ROOT)
     p.add_argument("--npy-root",        type=Path, default=DEFAULT_NPY_ROOT)
+    p.add_argument("--vlm", action="store_true",
+               help="Run VLM attribute tagging after ResNet cascade")
+    p.add_argument("--vlm-only", action="store_true",
+                help="Skip ResNet cascade, run VLM tagging only")
+    p.add_argument("--vlm-root", type=Path,
+                default=Path(__file__).parent.parent / "taxonomies" / "vlm",
+                help="Path to taxonomies/vlm/ directory")
     args = p.parse_args()
 
     t_start = time.perf_counter()
@@ -433,7 +441,7 @@ def main() -> None:
             print(f"  WARN: {len(missing)} input images have no .npy — "
                 f"remove --skip-preprocess to build them")
         print(f"Preprocessing skipped — {len(stems)} stems matched from input dir")
-        
+
     else:
         stems = preprocess_images(
             image_dir  = args.image_dir,
@@ -457,7 +465,59 @@ def main() -> None:
         known_category  = args.known_category,
     )
 
-    # ── 5. Write output ─────────────────────────────────────────────────
+
+    # ── 5. VLM attribute tagging (optional second tier) ─────────────────
+    
+    vlm_columns: list[str] = []
+
+    if args.vlm or args.vlm_only:
+        import os
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise EnvironmentError(
+                "ANTHROPIC_API_KEY not set — required for --vlm.\n"
+                "Run: $env:ANTHROPIC_API_KEY = 'sk-ant-...'  (PowerShell)"
+            )
+
+        import anthropic
+        from vlm_tagger import load_vlm_config, tag_images
+
+        vlm_cfg = load_vlm_config(args.domain, args.vlm_root)
+        client  = anthropic.Anthropic(api_key=api_key)
+
+        # Collect raw image paths for the same stems that went through ResNet
+        # VLM works on raw images, not npy
+        if args.vlm_only:
+            image_paths = sorted(
+                p for p in args.image_dir.rglob("*")
+                if p.suffix in IMAGE_EXTENSIONS
+            )
+        else:
+            # Only tag images that made it through the ResNet cascade
+            tagged_stems = set(df["name"].tolist()) if not args.vlm_only else set()
+            image_paths  = sorted(
+                p for p in args.image_dir.rglob("*")
+                if p.suffix in IMAGE_EXTENSIONS
+                and (not tagged_stems or p.stem in tagged_stems)
+            )
+
+        print(f"\nVLM tier — {len(image_paths)} images")
+        print(f"Groups : {list(vlm_cfg['attribute_groups'].keys())}")
+
+        vlm_rows = tag_images(image_paths, vlm_cfg, client)
+        vlm_df   = pd.DataFrame(vlm_rows).set_index("name")
+        vlm_columns = [c for c in vlm_df.columns if c != "name"]
+
+        if args.vlm_only:
+            df = vlm_df.reset_index()
+        else:
+            # Merge VLM columns into the ResNet output
+            df = df.set_index("name")
+            for col in vlm_columns:
+                df[col] = vlm_df[col]
+            df = df.reset_index()
+
+    # ── 6. Write output ─────────────────────────────────────────────────
     args.out_csv.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.out_csv, index=False)
 
@@ -465,14 +525,11 @@ def main() -> None:
     print(f"\n{'='*60}")
     print(f"Done — {len(df)} images in {elapsed:.1f}s")
     print(f"Output : {args.out_csv}")
-    if "category" in df.columns and df["category"].nunique() > 0:
-        print(f"\nCategory distribution:")
-        print(df["category"].value_counts().to_string())
-    if "subcategory" in df.columns and df["subcategory"].ne("").any():
-        print(f"\nSubcategory distribution (top 15):")
-        print(df["subcategory"].value_counts().head(15).to_string())
+    resnet_cols = ["category", "category_conf", "subcategory", "subcategory_conf"]
+    print(f"ResNet columns : {[c for c in resnet_cols if c in df.columns]}")
+    if vlm_columns:
+        print(f"VLM columns    : {vlm_columns}")
     print(f"{'='*60}\n")
-
 
 if __name__ == "__main__":
     main()

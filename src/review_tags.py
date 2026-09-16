@@ -9,10 +9,10 @@ so the HTML file is fully self-contained and portable.
 
 Usage
 -----
-    python src/review_tags.py \
-        --tagged-csv "E:/fashion-data/csv/shoes_tagged.csv" \
-        --image-dir  "E:/fashion-data/01-RAW/shoes_production" \
-        --out-html   "E:/fashion-data/review/shoes_review.html" \
+    python src/review_tags.py `
+        --tagged-csv "E:/fashion-data/csv/shoes_tagged.csv" `
+        --image-dir  "E:/fashion-data/01-RAW/shoes_production" `
+        --out-html   "E:/fashion-data/review/shoes_review.html" `
         --page-size  50
 
     # Review only images with a specific attribute

@@ -1,0 +1,76 @@
+# taxonomies/vlm/jackets.yaml
+# ═══════════════════════════════════════════════════════════════════════════
+# VLM configuration for the jackets domain.
+# ═══════════════════════════════════════════════════════════════════════════
+
+domain: jackets
+model: claude-sonnet-4-6
+max_workers: 4
+retry_attempts: 3
+retry_delay_s: 5.0
+
+attribute_groups:
+
+  silhouette:
+    label_type: multi_label
+    system_prompt: >
+      You are a fashion garment attribute recognition system.
+      You detect construction and silhouette attributes in jacket images.
+      Only mark an attribute as present if it is clearly visible.
+      Do not infer — if you cannot see it, mark it false.
+      Always respond with valid JSON only, no other text.
+    attributes:
+      double-breasted:
+        description: "Two parallel rows of buttons with wide overlap"
+      single-breasted:
+        description: "Single row of buttons or closures at centre front"
+      belted:
+        description: "Belt or tie at the waist"
+      cropped:
+        description: "Hem falls above the natural waist"
+      oversized:
+        description: "Significantly larger than body — dropped shoulders, loose fit"
+      fitted:
+        description: "Closely fitted to the body, structured silhouette"
+
+  closures:
+    label_type: multi_label
+    system_prompt: >
+      You are a fashion garment attribute recognition system.
+      You detect closure types in jacket images.
+      Only mark an attribute as present if it is clearly visible.
+      Do not infer — if you cannot see it, mark it false.
+      Always respond with valid JSON only, no other text.
+    attributes:
+      zip:
+        description: "Zipper closure at centre front"
+      button:
+        description: "Button or snap closure"
+      hook-and-eye:
+        description: "Small hook-and-eye fastening"
+      open-front:
+        description: "No closure — worn open"
+      drawstring:
+        description: "Drawstring at hem or waist"
+
+  embellishments:
+    label_type: multi_label
+    system_prompt: >
+      You are a fashion garment embellishment recognition system.
+      You detect decorative elements in jacket images.
+      Only mark an attribute as present if it is clearly visible.
+      Do not infer — if you cannot see it, mark it false.
+      Always respond with valid JSON only, no other text.
+    attributes:
+      embroidery:
+        description: "Embroidered decoration on fabric"
+      sequin:
+        description: "Sequin or metallic disc embellishment"
+      patch:
+        description: "Fabric patch or appliqué"
+      fur-trim:
+        description: "Fur or faux-fur trim on collar, cuffs, or hem"
+      stud:
+        description: "Metal stud or spike decoration"
+      logo-print:
+        description: "Visible brand logo printed or woven into fabric"
