@@ -1,0 +1,9 @@
+defaults:
+- default
+
+max_epochs: 30
+learning_rate: 1e-5
+freeze_backbone: false
+clip_unfreeze_layers: 2 # 2 blocks for single-label — more conservative
+early_stopping_patience: 8
+finetune_from: "01"

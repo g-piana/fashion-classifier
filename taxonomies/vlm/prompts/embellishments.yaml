@@ -1,0 +1,138 @@
+# embellishments.yaml
+# =========================================================================
+# SHARED embellishment prompts — used for ALL fashion categories.
+# Reduced to the 28 product-owner-approved embellishments.
+#
+# These are contrastive prompt pairs for zero-shot FashionCLIP scoring
+# (audit_zeroshot.py) and double as the vocabulary for the trained
+# multi-label classifier.
+#
+# Prompts use the generic word "item" / "fashion item" so they read
+# sensibly across shoes, bags, ready-to-wear, etc. Where a category
+# benefits from more specific wording you can override a single prompt
+# in the category file under an `embellishments_overrides:` block
+# (see ready-to-wear.yaml for an example).
+#
+# tier is advisory metadata from the shoes 300-image audit. It does NOT
+# change scoring — it records where each attribute is expected to land so
+# pipeline.py and your consolidation step can route accordingly:
+#   A = train a classifier (ambiguous zero-shot signal, enough positives)
+#   B = zero-shot usable now (strong signal, reasonable prevalence)
+#   C = rare — zero-shot with high threshold, defer training
+# Re-audit per category; tiers can shift (e.g. buckle is common on shoes,
+# rare on knitwear).
+# =========================================================================
+
+attributes:
+  bead:
+    pos: "a fashion item decorated with beads, beading or bead embellishments"
+    neg: "a plain fashion item with no bead decoration"
+    tier: A
+  bow:
+    pos: "a fashion item with a fabric bow, ribbon bow or bow-shaped embellishment"
+    neg: "a fashion item with no bow detail"
+    tier: B
+  buckle:
+    pos: "a fashion item with a visible decorative buckle as a design feature, not just a plain functional closure"
+    neg: "a fashion item with no buckle, or only a minimal plain functional buckle"
+    tier: B
+  button:
+    pos: "a fashion item decorated with visible buttons as a design feature"
+    neg: "a fashion item with no visible button details"
+    tier: A
+  chain:
+    pos: "a fashion item decorated with metal chains, chain-link trim or chain detail"
+    neg: "a fashion item with no chain decoration"
+    tier: B
+  charme:
+    pos: "a fashion item with a hanging charm, dangling ornament or charm pendant attached"
+    neg: "a fashion item with no charm or hanging ornament"
+    tier: C
+  crystal:
+    pos: "a fashion item embellished with crystals, rhinestones or faceted gemstone-like stones"
+    neg: "a plain fashion item with no crystals or rhinestones"
+    tier: A
+  embroidery:
+    pos: "a fashion item with visible embroidery, stitched patterns or needlework"
+    neg: "a plain fashion item with no embroidery"
+    tier: B
+  eyelet:
+    pos: "a fashion item with metal eyelets, grommets or punched-hole details"
+    neg: "a fashion item with no visible eyelets or grommets"
+    tier: A
+  feather:
+    pos: "a fashion item decorated with feathers or feather trim"
+    neg: "a fashion item with no feather decoration"
+    tier: B
+  flower:
+    pos: "a fashion item with fabric flowers, floral appliqué or 3D flower embellishments"
+    neg: "a fashion item with no floral appliqué or fabric flower ornament"
+    tier: C
+  fringe:
+    pos: "a fashion item with visible fringe, leather fringe or tassel fringe trim"
+    neg: "a fashion item with no fringe detail"
+    tier: C
+  fur:
+    pos: "a fashion item with fur trim, fur lining or fur pompom detail"
+    neg: "a fashion item with no fur or faux-fur detail"
+    tier: C
+  gemstone:
+    pos: "a fashion item set with gemstones, cabochons or semi-precious stone embellishments"
+    neg: "a plain fashion item with no gemstone decoration"
+    tier: C
+  hardware:
+    pos: "a fashion item with prominent decorative metal hardware such as D-rings, plates or clasps"
+    neg: "a fashion item with no visible decorative metal hardware"
+    tier: C
+  lace:
+    pos: "a fashion item with lace fabric, lace overlay or lace trim"
+    neg: "a fashion item with no lace fabric"
+    tier: B
+  logo:
+    pos: "a fashion item with a brand logo, label text or brand name prominently displayed"
+    neg: "a fashion item with no visible brand logo or label"
+    tier: C
+  mesh-insert:
+    pos: "a fashion item with a mesh fabric panel or mesh insert"
+    neg: "a fashion item with no mesh panel — solid material only"
+    tier: B
+  mirror:
+    pos: "a fashion item with mirror-effect panels, mirror tiles or highly reflective mirror finish"
+    neg: "a fashion item with no mirror or mirror-effect material"
+    tier: C
+  patch:
+    pos: "a fashion item decorated with sewn-on patches, embroidered patches or appliqué patches"
+    neg: "a fashion item with no patches"
+    tier: A
+  pearl:
+    pos: "a fashion item embellished with pearls or pearl-effect beads"
+    neg: "a plain fashion item with no pearl decoration"
+    tier: B
+  pom-pom:
+    pos: "a fashion item decorated with a fluffy pompom"
+    neg: "a fashion item with no pompom detail"
+    tier: C
+  ribbon:
+    pos: "a fashion item with ribbon ties, ribbon bow or ribbon strap embellishment"
+    neg: "a fashion item with no ribbon detail"
+    tier: A
+  rope:
+    pos: "a fashion item with rope trim, jute rope or twisted rope cord detail"
+    neg: "a fashion item with no rope or cord trim"
+    tier: B
+  sequin:
+    pos: "a fashion item covered in sequins, paillettes or glittery disc embellishments"
+    neg: "a plain fashion item with no sequins or glitter discs"
+    tier: B
+  stud:
+    pos: "a fashion item decorated with metal studs, spike studs or stud embellishments"
+    neg: "a plain fashion item with no studs or spikes"
+    tier: A
+  tassel:
+    pos: "a fashion item decorated with a tassel or hanging tassel ornament"
+    neg: "a fashion item with no tassel detail"
+    tier: C
+  web:
+    pos: "a fashion item featuring a web pattern, spider web motif or interlaced web design"
+    neg: "a fashion item with no web pattern"
+    tier: A

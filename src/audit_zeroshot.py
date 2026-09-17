@@ -9,26 +9,49 @@ Each attribute is independent → naturally multi-label.
 
 The image encoder runs ONCE per image; text embeddings are cached.
 On CPU with 600 images and 10 attributes this takes ~3-5 minutes.
+With 47 attributes the inner loop takes longer — expect ~15-20 min on CPU
+for 300 images. Use --domain to restrict to a subset during development.
+
+Prompts are loaded from YAML, not hardcoded:
+    taxonomies/vlm/prompts/embellishments.yaml           (shared, all categories)
+    taxonomies/vlm/prompts/model_details/<category>.yaml (one per category)
 
 Usage
 -----
-    pip install transformers torch Pillow pandas tqdm
+    pip install transformers torch Pillow pandas pyyaml tqdm
 
-    # From raw images (jpg/png/webp):
-    python src/audit_zeroshot.py \
-        --image-dir  "E:/fashion-data/01-RAW/jackets_women_zalando" \
-        --out-csv    "E:/fashion-data/csv/audit_zeroshot.csv" \
+    # Full audit for a category — model_details[shoes] + shared embellishments:
+    python src/audit_zeroshot.py `
+        --image-dir  "E:/fashion-data/01-RAW/shoes_emb_md_300" `
+        --category   shoes `
+        --out-csv    "E:/fashion-data/csv/audit_zeroshot_shoes.csv" `
         --threshold  0.5
 
-    # From preprocessed .npy files:
-    python src/audit_zeroshot.py \
-        --npy-dir    "E:/fashion-data/npy/jackets/01" \
-        --out-csv    "E:/fashion-data/csv/audit_zeroshot.csv"
+    # Embellishments only (category not needed — they're shared):
+    python src/audit_zeroshot.py `
+        --image-dir  "E:/fashion-data/01-RAW/shoes_emb_md_300" `
+        --domain     embellishments `
+        --out-csv    "E:/fashion-data/csv/audit_zeroshot_emb.csv"
 
-    # Override model (default: patrickjohncyh/fashion-clip):
-    python src/audit_zeroshot.py \
-        --image-dir  "..." \
-        --model      "openai/clip-vit-large-patch14"
+    # model_details only for one category:
+    python src/audit_zeroshot.py `
+        --image-dir  "E:/fashion-data/01-RAW/rtw_300" `
+        --category   ready-to-wear `
+        --domain     model_details `
+        --out-csv    "E:/fashion-data/csv/audit_zeroshot_rtw_md.csv"
+
+    # From preprocessed .npy files:
+    python src/audit_zeroshot.py `
+        --npy-dir    "E:/fashion-data/npy/embellishments/01" `
+        --category   shoes `
+        --out-csv    "E:/fashion-data/csv/audit_zeroshot_shoes.csv"
+
+    # Also export Label Studio pre-annotation JSON:
+    python src/audit_zeroshot.py `
+        --image-dir  "..." `
+        --category   shoes `
+        --out-csv    "..." `
+        --labelstudio
 
 Output
 ------
@@ -36,6 +59,8 @@ Output
         name, <attr>_score, <attr>_pred, ...
 
     audit_summary.txt   — per-attribute stats printed to console + saved
+
+    labelstudio_preannotations.json  — (if --labelstudio) ready for import
 """
 
 from __future__ import annotations
@@ -48,80 +73,213 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
+import yaml
 from PIL import Image
 from tqdm import tqdm
 from transformers import CLIPModel, CLIPProcessor
 
 
 # ---------------------------------------------------------------------------
-# Attribute definitions
+# Prompt loading — YAML-driven, category-aware
 # ---------------------------------------------------------------------------
-# Each attribute has:
-#   "pos": text describing the garment WHEN the attribute IS present
-#   "neg": text describing the garment when the attribute is ABSENT
+# Prompts live in taxonomies/vlm/prompts/ :
 #
-# Contrastive pairs give much more reliable scores than single prompts.
-# Tweak these freely — prompt wording is the main lever for zero-shot quality.
+#   prompts/embellishments.yaml              ← SHARED across all categories
+#   prompts/model_details/<category>.yaml    ← one per category
+#
+# For a given --category, the active attribute set is:
+#   model_details[category]  +  embellishments (with any per-category override)
+#
+# You can also restrict to one domain with --domain {embellishments,model_details}.
+#
+# YAML schema
+# -----------
+#   embellishments.yaml:
+#       attributes:
+#           <attr>: {pos: "...", neg: "...", tier: A|B|C}
+#
+#   model_details/<category>.yaml:
+#       category: <name>
+#       attributes:
+#           <attr>: {pos: "...", neg: "..."}
+#       embellishments_overrides:        # optional
+#           <attr>: {pos: "...", neg: "..."}
 # ---------------------------------------------------------------------------
 
-ATTRIBUTES: dict[str, dict[str, str]] = {
-    # ── Global / silhouette ──────────────────────────────────────────────
-    "ankle_length": {
-        "pos": "a full-length coat or jacket reaching down to the ankles",
-        "neg": "a short or hip-length jacket",
-    },
-    "asymmetric": {
-        "pos": "a jacket with an asymmetric hem, collar or zip closure",
-        "neg": "a jacket with a symmetric, even silhouette",
-    },
-    "cropped": {
-        "pos": "a cropped jacket or bolero ending above the hips or at the waist",
-        "neg": "a hip-length or longer jacket",
-    },
-    # ── Mid-scale ────────────────────────────────────────────────────────
-    "belted": {
-        "pos": "a jacket or coat with a visible belt, sash or waist tie",
-        "neg": "a jacket with no belt or waist tie",
-    },
-    "drawstring": {
-        "pos": "a jacket with a visible drawstring at the hood, hem or waist",
-        "neg": "a jacket with no drawstring",
-    },
-    "epaulette": {
-        "pos": "a jacket with epaulettes or structured shoulder strap details",
-        "neg": "a jacket with plain shoulders and no epaulettes",
-    },
-    # ── Local / fine-grained ─────────────────────────────────────────────
-    "chest_pocket": {
-        "pos": "a jacket with a visible chest pocket on the front",
-        "neg": "a jacket with no chest pocket",
-    },
-    # ── Embellishments ────────────────────────────────────────────────────
-    "embroidery": {
-        "pos": "a garment decorated with visible embroidery, stitched patterns or needlework",
-        "neg": "a plain garment with no embroidery",
-    },
-    "eyelet": {
-        "pos": "a garment with visible eyelets, grommets or punched hole details",
-        "neg": "a garment with no eyelet or grommet details",
-    },
-    "feather": {
-        "pos": "a garment trimmed or decorated with feathers",
-        "neg": "a garment with no feather trim or decoration",
-    },
-    "flower": {
-        "pos": "a garment with floral appliqué, fabric flowers or 3D flower embellishments",
-        "neg": "a garment with no floral appliqué or fabric flowers",
-    },
-    "fringe": {
-        "pos": "a garment with visible fringe, tassel trim or frayed edge decoration",
-        "neg": "a garment with no fringe or tassel trim",
-    },
-}
+DEFAULT_PROMPTS_ROOT = Path(__file__).parent.parent / "taxonomies" / "vlm" / "prompts"
+
+
+def _strip_meta(attr_dict: dict) -> dict:
+    """Keep only pos/neg for scoring; drop tier and any other metadata."""
+    return {"pos": attr_dict["pos"], "neg": attr_dict["neg"]}
+
+
+def load_embellishments(prompts_root: Path) -> dict[str, dict[str, str]]:
+    """Load the shared embellishments prompt set (pos/neg only)."""
+    path = Path(prompts_root) / "embellishments.yaml"
+    if not path.exists():
+        raise FileNotFoundError(f"Shared embellishments file not found: {path}")
+    with open(path, encoding="utf-8") as f:
+        raw = yaml.safe_load(f)
+    return {name: _strip_meta(a) for name, a in raw["attributes"].items()}
+
+
+def load_model_details(category: str, prompts_root: Path) -> dict[str, dict[str, str]]:
+    """Load a category's model_details prompts, plus any embellishment overrides."""
+    path = Path(prompts_root) / "model_details" / f"{category}.yaml"
+    if not path.exists():
+        available = sorted(
+            p.stem for p in (Path(prompts_root) / "model_details").glob("*.yaml")
+        )
+        raise FileNotFoundError(
+            f"No model_details prompts for category '{category}' at {path}\n"
+            f"Available categories: {available}"
+        )
+    with open(path, encoding="utf-8") as f:
+        raw = yaml.safe_load(f)
+    md = {name: _strip_meta(a) for name, a in (raw.get("attributes") or {}).items()}
+    overrides = {
+        name: _strip_meta(a)
+        for name, a in (raw.get("embellishments_overrides") or {}).items()
+    }
+    return md, overrides
+
+
+def build_attributes(
+    category: str | None,
+    domain: str | None,
+    prompts_root: Path,
+) -> dict[str, dict[str, str]]:
+    """
+    Assemble the active attribute set for this run.
+
+    category : which model_details set to load (required unless domain==embellishments)
+    domain   : optional restriction — 'embellishments' or 'model_details'
+    """
+    embellishments = load_embellishments(prompts_root)
+
+    # Embellishments-only run needs no category
+    if domain == "embellishments":
+        return dict(embellishments)
+
+    if category is None:
+        raise ValueError(
+            "--category is required (e.g. shoes, bags, ready-to-wear) "
+            "unless --domain embellishments is used."
+        )
+
+    model_details, overrides = load_model_details(category, prompts_root)
+
+    if domain == "model_details":
+        return dict(model_details)
+
+    # Full run: model_details + embellishments, with category overrides applied.
+    # Prefix keys to prevent name collisions between the two domains
+    # (e.g. 'zip-closure' in model_details vs any embellishment).
+    merged = dict(embellishments)
+    merged.update(overrides)               # category-specific embellishment wording
+    for name, a in model_details.items():
+        merged[name] = a                   # model_details never collide after review
+    return merged
+
+
+def load_embellishment_tiers(prompts_root: Path) -> dict[str, str]:
+    """
+    Return {attr_name: tier} from embellishments.yaml.
+    Attributes with no tier default to 'B'. Used by pipeline.py to apply
+    per-tier thresholds and to skip Tier-A attributes served by the
+    trained classifier instead of zero-shot.
+    """
+    path = Path(prompts_root) / "embellishments.yaml"
+    with open(path, encoding="utf-8") as f:
+        raw = yaml.safe_load(f)
+    return {name: a.get("tier", "B") for name, a in raw["attributes"].items()}
+
+
+# ---------------------------------------------------------------------------
+# Reusable scoring API — imported by pipeline.py
+# ---------------------------------------------------------------------------
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 DEFAULT_MODEL    = "patrickjohncyh/fashion-clip"
 DEFAULT_THRESHOLD = 0.5
+
+# Default per-tier thresholds. Tier C is rare → require higher confidence to
+# suppress false positives; Tier B uses the standard 0.5. Tier A is normally
+# served by the trained classifier, not zero-shot, so it is excluded by
+# default (see exclude_tiers).
+DEFAULT_TIER_THRESHOLDS = {"A": 0.5, "B": 0.5, "C": 0.7}
+
+
+def load_clip(model_name: str, device: "torch.device"):
+    """Load a FashionCLIP model + processor once, for reuse across images."""
+    processor = CLIPProcessor.from_pretrained(model_name)
+    model     = CLIPModel.from_pretrained(model_name).to(device)
+    model.eval()
+    return processor, model
+
+
+def score_images_zeroshot(
+    image_paths:     list[Path],
+    attributes:      dict[str, dict[str, str]],
+    processor:       "CLIPProcessor",
+    model:           "CLIPModel",
+    device:          "torch.device",
+    tiers:           dict[str, str] | None = None,
+    tier_thresholds: dict[str, float] | None = None,
+    default_threshold: float = DEFAULT_THRESHOLD,
+) -> list[dict]:
+    """
+    Score raw images against a set of contrastive attribute prompts.
+
+    Returns one dict per image:
+        {"name": stem,
+         "<attr>_score": float, "<attr>_pred": 0/1, ...}
+
+    This is the function pipeline.py calls for its zero-shot tier. It mirrors
+    the standalone run_audit() loop but takes an already-loaded model and a
+    caller-supplied attribute set, and applies per-tier thresholds so Tier-C
+    rare attributes use a stricter cutoff than Tier-B.
+
+    tiers            : {attr: 'A'|'B'|'C'}; controls which threshold applies.
+    tier_thresholds  : override DEFAULT_TIER_THRESHOLDS if given.
+    default_threshold: used for any attribute with no tier entry.
+    """
+    tiers           = tiers or {}
+    tier_thresholds = tier_thresholds or DEFAULT_TIER_THRESHOLDS
+    attr_names      = list(attributes.keys())
+
+    def _threshold_for(attr: str) -> float:
+        tier = tiers.get(attr)
+        if tier is None:
+            return default_threshold
+        return tier_thresholds.get(tier, default_threshold)
+
+    rows: list[dict] = []
+    for path in tqdm(image_paths, desc="Zero-shot scoring"):
+        img = load_from_image_file(path)
+        if img is None:
+            # Emit empty row so downstream merge keeps the stem
+            row = {"name": path.stem}
+            for attr in attr_names:
+                row[f"{attr}_score"] = ""
+                row[f"{attr}_pred"]  = ""
+            rows.append(row)
+            continue
+
+        row = {"name": path.stem}
+        for attr in attr_names:
+            score = contrastive_score_joint(
+                processor, model, img,
+                pos_text=attributes[attr]["pos"],
+                neg_text=attributes[attr]["neg"],
+                device=device,
+            )
+            row[f"{attr}_score"] = round(score, 4)
+            row[f"{attr}_pred"]  = int(score >= _threshold_for(attr))
+        rows.append(row)
+
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -223,8 +381,8 @@ def run_diagnostics(
     image_dir: Path | None,
 ) -> None:
     """
-    Sanity-check: a jacket image should score high for jacket text
-    and low for dress text.
+    Sanity-check: FashionCLIP should separate a fashion item from an
+    unrelated object. Category-agnostic so it works for any domain.
     """
     print("Running embedding diagnostics...")
 
@@ -236,19 +394,11 @@ def run_diagnostics(
 
             score = contrastive_score_joint(
                 processor, model, pil,
-                pos_text="a photo of a jacket",
-                neg_text="a photo of a floral summer dress",
+                pos_text="a photo of a fashion product on a plain background",
+                neg_text="a photo of a landscape or a piece of furniture",
                 device=device,
             )
-            print(f"  jacket_image vs [jacket / dress] → jacket prob = {score:.4f}  (expect > 0.60)")
-
-            score2 = contrastive_score_joint(
-                processor, model, pil,
-                pos_text="a jacket with a visible chest pocket",
-                neg_text="a jacket with no chest pocket",
-                device=device,
-            )
-            print(f"  jacket_image vs [chest_pocket / no_pocket] → chest_pocket prob = {score2:.4f}  (0.3-0.7 is fine)")
+            print(f"  image vs [fashion / non-fashion] → fashion prob = {score:.4f}  (expect > 0.70)")
 
     print()
 
@@ -446,6 +596,20 @@ def main():
 
     p.add_argument("--out-csv",    type=Path, required=True,
                    help="Output CSV path  (e.g. E:/fashion-data/csv/audit_zeroshot.csv)")
+    p.add_argument("--category", type=str, default=None,
+                   help=(
+                       "Fashion category — selects which model_details prompt file "
+                       "to load, e.g. shoes, bags, ready-to-wear, luggage. "
+                       "Required unless --domain embellishments."
+                   ))
+    p.add_argument("--domain", type=str, default=None,
+                   choices=["embellishments", "model_details"],
+                   help=(
+                       "Restrict audit to one domain only. "
+                       "Default: run model_details[category] + shared embellishments."
+                   ))
+    p.add_argument("--prompts-root", type=Path, default=DEFAULT_PROMPTS_ROOT,
+                   help=f"Path to prompts directory (default: {DEFAULT_PROMPTS_ROOT})")
     p.add_argument("--model",      type=str,  default=DEFAULT_MODEL,
                    help=f"HuggingFace model ID (default: {DEFAULT_MODEL})")
     p.add_argument("--threshold",  type=float, default=DEFAULT_THRESHOLD,
@@ -455,22 +619,31 @@ def main():
 
     args = p.parse_args()
 
+    # Assemble the active attribute set from YAML
+    active_attributes = build_attributes(
+        category     = args.category,
+        domain       = args.domain,
+        prompts_root = args.prompts_root,
+    )
+    scope = args.domain or f"model_details[{args.category}] + embellishments"
+    print(f"Prompt scope  : {scope} ({len(active_attributes)} attributes)")
+
     df = run_audit(
         image_dir  = args.image_dir,
         npy_dir    = args.npy_dir,
         out_csv    = args.out_csv,
         model_name = args.model,
         threshold  = args.threshold,
-        attributes = ATTRIBUTES,
+        attributes = active_attributes,
     )
 
     summary_path = args.out_csv.parent / "audit_summary.txt"
-    print_summary(df, ATTRIBUTES, args.threshold, summary_path)
+    print_summary(df, active_attributes, args.threshold, summary_path)
 
     if args.labelstudio:
         ls_path = args.out_csv.parent / "labelstudio_preannotations.json"
         export_labelstudio_preannotations(
-            df, ATTRIBUTES, args.threshold, ls_path, args.image_dir
+            df, active_attributes, args.threshold, ls_path, args.image_dir
         )
 
 

@@ -71,6 +71,10 @@ class FashionDataset(Dataset):
             img = self.augment(image=img_uint8)["image"].astype(np.float32)
 
         # Normalize per channel
+        # preprocess.py stores raw 0-255 pixels; CLIP mean/std assume 0-1 input.
+        # Scale to [0,1] only when CLIP-style constants are in use.
+        if float(np.max(self.mean)) <= 1.0:      # CLIP constants → mean ~0.48
+            img = img / 255.0
         img = (img - self.mean) / (self.std + 1e-8)
 
         # HxWxC → CxHxW

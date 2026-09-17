@@ -1,0 +1,233 @@
+# model_details/ready-to-wear.yaml
+# =========================================================================
+# Ready-to-wear is the largest model_details set (~72 attributes covering
+# necklines, sleeves, lengths, fits, pockets, closures, silhouettes).
+# Because zero-shot signal for RTW is best when the prompt names a garment,
+# each prompt says "a garment", "a top", "a dress" etc. as appropriate.
+# =========================================================================
+
+category: ready-to-wear
+
+attributes:
+  A-line:
+    pos: "a garment with an A-line silhouette, fitted at the top and flaring out toward the hem"
+    neg: "a straight, boxy or fitted garment, not A-line"
+  ankle-length:
+    pos: "a full-length garment reaching down to the ankles"
+    neg: "a short, knee-length or mid-length garment"
+  asymmetric:
+    pos: "a garment with an asymmetric hem, neckline or closure"
+    neg: "a garment with a symmetric, even silhouette"
+  backless:
+    pos: "a garment with an open or cut-away back"
+    neg: "a garment with a fully covered back"
+  baggy:
+    pos: "a loose baggy garment with a lot of ease"
+    neg: "a fitted or slim garment"
+  balconette:
+    pos: "a balconette bra or top with a low horizontal neckline lifting the bust"
+    neg: "a top or bra that is not a balconette style"
+  balloon:
+    pos: "a garment with voluminous balloon sleeves or a balloon hem"
+    neg: "a garment with fitted or straight sleeves and hem"
+  bandeau:
+    pos: "a strapless bandeau top that wraps straight across the bust"
+    neg: "a top with straps or a shaped neckline, not a bandeau"
+  bell-bottom:
+    pos: "trousers that flare widely from the knee into a bell shape"
+    neg: "straight, slim or tapered trousers, not bell-bottom"
+  belted:
+    pos: "a garment with a visible belt, sash or waist tie"
+    neg: "a garment with no belt or waist tie"
+  boat-neck:
+    pos: "a garment with a wide horizontal boat neckline across the collarbones"
+    neg: "a garment with a round, V or high neckline, not boat-neck"
+  button-down:
+    pos: "a shirt with a collar and a full front button placket"
+    neg: "a pullover or garment with no front button placket"
+  button-front:
+    pos: "a garment fastened with a row of buttons down the front"
+    neg: "a garment with a zip, pullover or wrap front, no button row"
+  cable-knit:
+    pos: "a knitted garment with raised cable-knit patterns"
+    neg: "a smooth knit or woven garment, no cable pattern"
+  capri-length:
+    pos: "cropped capri trousers ending at mid-calf"
+    neg: "full-length or short trousers, not capri"
+  cargo-pocket:
+    pos: "a garment with large patch cargo pockets"
+    neg: "a garment with no cargo pockets"
+  chest-pocket:
+    pos: "a garment with a chest pocket on the front"
+    neg: "a garment with no chest pocket"
+  collar:
+    pos: "a garment with a collar"
+    neg: "a collarless garment with no collar"
+  collarless:
+    pos: "a collarless garment with no collar"
+    neg: "a garment with a collar"
+  cropped:
+    pos: "a cropped garment ending above the waist or hips"
+    neg: "a hip-length or longer garment"
+  cuffed:
+    pos: "a garment with turned-up cuffs at the sleeves or hem"
+    neg: "a garment with plain uncuffed sleeves or hem"
+  cut-out:
+    pos: "a garment with cut-out openings exposing skin"
+    neg: "a garment with no cut-out openings"
+  double-breasted:
+    pos: "a jacket or coat with a double-breasted front and two columns of buttons"
+    neg: "a single-breasted garment with one column of buttons"
+  drawstring:
+    pos: "a garment with a visible drawstring at the waist, hood or hem"
+    neg: "a garment with no drawstring"
+  empire-line:
+    pos: "a dress with an empire waistline just below the bust"
+    neg: "a dress with a natural or dropped waistline, not empire"
+  epaulette:
+    pos: "a garment with epaulettes or structured shoulder tabs"
+    neg: "a garment with plain shoulders and no epaulettes"
+  fitted:
+    pos: "a fitted garment that follows the body closely"
+    neg: "a loose, oversized or baggy garment"
+  flap-pocket:
+    pos: "a garment with pockets covered by a flap"
+    neg: "a garment with no flap pockets"
+  frayed:
+    pos: "a garment with frayed raw edges"
+    neg: "a garment with clean finished edges, not frayed"
+  high-neck:
+    pos: "a garment with a high neckline covering the base of the neck"
+    neg: "a garment with a low or open neckline"
+  high-waisted:
+    pos: "high-waisted trousers or skirt sitting above the natural waist"
+    neg: "mid or low-rise trousers or skirt"
+  hooded:
+    pos: "a garment with an attached hood"
+    neg: "a garment with no hood"
+  kangaroo-pocket:
+    pos: "a garment with a single front kangaroo pouch pocket"
+    neg: "a garment with no kangaroo pocket"
+  long-length:
+    pos: "a long garment reaching below the knee or to the floor"
+    neg: "a short or mid-length garment"
+  long-sleeve:
+    pos: "a garment with full-length long sleeves"
+    neg: "a short-sleeve or sleeveless garment"
+  low-waisted:
+    pos: "low-rise trousers or skirt sitting below the natural waist"
+    neg: "mid or high-waisted trousers or skirt"
+  mandarin-collar:
+    pos: "a garment with a short standing mandarin collar"
+    neg: "a garment with a flat, spread or no collar, not mandarin"
+  midi-length:
+    pos: "a midi-length garment ending around mid-calf"
+    neg: "a mini or full-length garment, not midi"
+  mini-length:
+    pos: "a short mini-length garment ending well above the knee"
+    neg: "a knee-length or longer garment"
+  off-the-shoulder:
+    pos: "a garment worn off the shoulders exposing them"
+    neg: "a garment that covers the shoulders"
+  one-button:
+    pos: "a jacket fastened with a single button"
+    neg: "a jacket with two or more buttons, or no button"
+  one-shoulder:
+    pos: "a garment with a single shoulder strap, leaving one shoulder bare"
+    neg: "a garment with two straps or sleeves"
+  one-sleeve:
+    pos: "a garment with a single sleeve on one arm only"
+    neg: "a garment with two sleeves or none"
+  oversized:
+    pos: "an oversized garment cut much larger than the body"
+    neg: "a fitted or true-to-size garment"
+  patch-pocket:
+    pos: "a garment with patch pockets sewn onto the outside"
+    neg: "a garment with no patch pockets"
+  pencil:
+    pos: "a straight fitted pencil skirt"
+    neg: "a flared, A-line or full skirt, not pencil"
+  piping:
+    pos: "a garment with contrasting piping along the seams or edges"
+    neg: "a garment with no piping detail"
+  pleated:
+    pos: "a garment with pressed or gathered pleats"
+    neg: "a smooth garment with no pleats"
+  plunging-neckline:
+    pos: "a garment with a deep plunging neckline"
+    neg: "a garment with a high or modest neckline"
+  pussy-bow:
+    pos: "a blouse with a pussy-bow tie at the neck"
+    neg: "a blouse with a plain neckline, no neck bow"
+  ripped:
+    pos: "a garment with ripped or distressed holes"
+    neg: "an intact garment with no rips"
+  round-neck:
+    pos: "a garment with a round crew neckline"
+    neg: "a garment with a V, boat or high neckline, not round"
+  ruching:
+    pos: "a garment with gathered ruched fabric"
+    neg: "a smooth garment with no ruching"
+  ruffles:
+    pos: "a garment decorated with ruffles or frills"
+    neg: "a garment with no ruffles or frills"
+  sheer:
+    pos: "a garment made of sheer see-through fabric"
+    neg: "a garment made of opaque fabric"
+  short-sleeve:
+    pos: "a garment with short sleeves"
+    neg: "a long-sleeve or sleeveless garment"
+  single-breasted:
+    pos: "a jacket or coat with a single-breasted front and one column of buttons"
+    neg: "a double-breasted garment with two columns of buttons"
+  sleeveless:
+    pos: "a sleeveless garment with no sleeves"
+    neg: "a garment with sleeves"
+  slim-fit:
+    pos: "a slim-fit garment cut close to the body"
+    neg: "a loose, relaxed or oversized garment"
+  spaghetti-straps:
+    pos: "a garment with thin spaghetti shoulder straps"
+    neg: "a garment with wide straps, sleeves or a strapless top"
+  storm-flap:
+    pos: "a coat with a storm flap across the chest or shoulders"
+    neg: "a coat with no storm flap"
+  strapless:
+    pos: "a strapless garment with no shoulder straps or sleeves"
+    neg: "a garment with straps or sleeves"
+  three-button:
+    pos: "a jacket fastened with three buttons"
+    neg: "a jacket with one, two or no buttons"
+  three-quarter-sleeve:
+    pos: "a garment with three-quarter-length sleeves ending below the elbow"
+    neg: "a garment with full-length or short sleeves"
+  toggle-closure:
+    pos: "a garment fastened with toggle-and-loop closures"
+    neg: "a garment with buttons, a zip or no toggles"
+  triangle:
+    pos: "a triangle bikini or bralette top with triangular cups"
+    neg: "a top that is not a triangle style"
+  turtleneck:
+    pos: "a garment with a high folded turtleneck collar"
+    neg: "a garment with a low or open neckline, not a turtleneck"
+  two-button:
+    pos: "a jacket fastened with two buttons"
+    neg: "a jacket with one, three or no buttons"
+  v-neck:
+    pos: "a garment with a V-shaped neckline"
+    neg: "a garment with a round, high or boat neckline, not V"
+  welt-pocket:
+    pos: "a garment with slim welt pockets set into the fabric"
+    neg: "a garment with patch or no welt pockets"
+  wide-leg:
+    pos: "wide-leg trousers with a full straight leg"
+    neg: "slim, tapered or skinny trousers"
+  zip-closure:
+    pos: "a garment fastened with a visible zipper"
+    neg: "a garment with buttons, ties or no zip"
+
+# Example: RTW-specific embellishment wording that reads better on garments.
+embellishments_overrides:
+  button:
+    pos: "a garment with decorative buttons used as an embellishment, beyond plain functional fastening"
+    neg: "a garment with only plain functional buttons or none"

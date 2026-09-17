@@ -1,0 +1,40 @@
+# model_details/bags.yaml
+category: bags
+
+attributes:
+  button-closure:
+    pos: "a bag closed with a button fastening"
+    neg: "a bag with a zip, magnetic or other non-button closure"
+  chain-strap:
+    pos: "a bag with a metal chain strap or chain shoulder handle"
+    neg: "a bag with a leather or fabric strap, not a chain"
+  cut-out-handle:
+    pos: "a bag with a handle formed by a cut-out opening in the body"
+    neg: "a bag with an attached strap or handle, no cut-out handle"
+  drawstring:
+    pos: "a bag closed with a drawstring gathered at the top"
+    neg: "a bag with a flap, zip or frame closure, no drawstring"
+  front-flap:
+    pos: "a bag with a front flap covering the opening"
+    neg: "an open-top or zip-top bag with no front flap"
+  hook-closure:
+    pos: "a bag fastened with a hook closure"
+    neg: "a bag with a zip, magnetic or button closure, no hook"
+  kiss-lock-closure:
+    pos: "a bag with a metal kiss-lock clasp at the top opening"
+    neg: "a bag with a zip, flap or drawstring, no kiss-lock clasp"
+  lock-closure:
+    pos: "a bag fastened with a turn-lock or padlock closure"
+    neg: "a bag with a zip or magnetic closure, no lock"
+  open-top:
+    pos: "an open-top bag or tote with no closure over the opening"
+    neg: "a bag with a flap, zip or drawstring closing the top"
+  piston-closure:
+    pos: "a bag with a piston or push-lock closure mechanism"
+    neg: "a bag with a zip, flap or magnetic closure"
+  shoulder-strap:
+    pos: "a bag with a shoulder strap long enough to carry on the shoulder"
+    neg: "a clutch or handheld bag with only short handles or no strap"
+  zip-closure:
+    pos: "a bag closed with a visible zipper across the top"
+    neg: "a bag with a flap, drawstring or open top, no zip"

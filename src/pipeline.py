@@ -48,6 +48,22 @@ Usage
         --out-csv   "E:/fashion-data/csv/pipeline_shoes_gucci.csv" `
         --brand     gucci
 
+    # With zero-shot FashionCLIP attribute tier (Tier B/C embellishments)
+    #   Local, no API key. Tier-A is skipped (served by trained classifier).
+    python src/pipeline.py `
+        --domain    shoes `
+        --image-dir "E:/fashion-data/01-RAW/nillab_01/photo" `
+        --out-csv   "E:/fashion-data/csv/pipeline_shoes.csv" `
+        --zeroshot
+
+    # Zero-shot before any classifier exists — score ALL tiers incl. A
+    python src/pipeline.py `
+        --domain    shoes `
+        --image-dir "E:/fashion-data/01-RAW/nillab_01/photo" `
+        --out-csv   "E:/fashion-data/csv/pipeline_shoes.csv" `
+        --zeroshot --zeroshot-include-tier-a `
+        --zeroshot-domain all --zeroshot-category shoes
+
     # Dry run — show what would happen without running inference
     python src/pipeline.py --domain shoes --image-dir "..." --out-csv "..." --dry-run
 """
@@ -79,6 +95,13 @@ from registry import (
     resolve_taxonomy_checkpoints,
 )
 from vlm_tagger import load_vlm_config, tag_images
+from audit_zeroshot import (
+    build_attributes,
+    load_embellishment_tiers,
+    load_clip,
+    score_images_zeroshot,
+    DEFAULT_PROMPTS_ROOT,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -133,7 +156,10 @@ def preprocess_images(
             skip_count += 1
             continue
 
-        img = cv2.imread(str(img_path))
+        from PIL import Image, ImageOps
+        pil = Image.open(img_path)
+        pil = ImageOps.exif_transpose(pil)      # no-op if orientation is normal
+        img = np.array(pil.convert("RGB"))      # always RGB, no BGR swap needed
         if img is None:
             print(f"  WARN: cannot read {img_path.name}")
             error_count += 1
@@ -171,7 +197,11 @@ class _NpyDataset(Dataset):
     def __getitem__(self, idx):
         stem = self.stems[idx]
         img  = np.load(self.npy_root / f"{stem}.npy").astype(np.float32)
-        img  = (img - self.mean) / (self.std + 1e-8)
+        # preprocess.py stores raw 0-255 pixels; CLIP mean/std assume 0-1 input.
+        # Scale to [0,1] only when CLIP-style constants are in use.
+        if float(np.max(self.mean)) <= 1.0:      # CLIP constants → mean ~0.48
+            img = img / 255.0
+        img = (img - self.mean) / (self.std + 1e-8)
         return stem, torch.from_numpy(img).permute(2, 0, 1)
 
 
@@ -394,6 +424,24 @@ def main() -> None:
     p.add_argument("--vlm-root", type=Path,
                 default=Path(__file__).parent.parent / "taxonomies" / "vlm",
                 help="Path to taxonomies/vlm/ directory")
+    p.add_argument("--zeroshot", action="store_true",
+                help="Run FashionCLIP zero-shot attribute tier (Tier B/C) "
+                     "after the ResNet cascade and merge columns into the output")
+    p.add_argument("--zeroshot-category", type=str, default=None,
+                help="Category for zero-shot prompts (defaults to --domain). "
+                     "Selects model_details/<category>.yaml.")
+    p.add_argument("--zeroshot-domain", type=str, default="embellishments",
+                choices=["embellishments", "model_details", "all"],
+                help="Which prompt set to score zero-shot (default: embellishments). "
+                     "'all' = model_details[category] + embellishments.")
+    p.add_argument("--zeroshot-include-tier-a", action="store_true",
+                help="Also score Tier-A embellishments zero-shot. By default "
+                     "Tier-A is skipped because it is served by the trained "
+                     "classifier; use this before that classifier exists.")
+    p.add_argument("--prompts-root", type=Path, default=DEFAULT_PROMPTS_ROOT,
+                help=f"Zero-shot prompts directory (default: {DEFAULT_PROMPTS_ROOT})")
+    p.add_argument("--clip-model", type=str, default="patrickjohncyh/fashion-clip",
+                help="HuggingFace CLIP model id for the zero-shot tier")
     args = p.parse_args()
 
     t_start = time.perf_counter()
@@ -517,6 +565,71 @@ def main() -> None:
                 df[col] = vlm_df[col]
             df = df.reset_index()
 
+    # ── 5.5 Zero-shot FashionCLIP attribute tier (Tier B/C) ─────────────
+    # Runs locally — no API key needed, unlike the VLM tier above.
+    # Loads FashionCLIP once, scores every image against the selected
+    # prompt set, applies per-tier thresholds, and merges *_score / *_pred
+    # columns into the same DataFrame keyed on "name".
+    zeroshot_columns: list[str] = []
+
+    if args.zeroshot:
+        category = args.zeroshot_category or args.domain
+
+        # Assemble prompts. For the default 'embellishments' domain no category
+        # is needed; for 'model_details' or 'all' the category selects the file.
+        zs_domain = None if args.zeroshot_domain == "all" else args.zeroshot_domain
+        attributes = build_attributes(
+            category     = category,
+            domain       = zs_domain,
+            prompts_root = args.prompts_root,
+        )
+
+        # Tier map drives per-attribute thresholds and Tier-A skipping.
+        tiers = load_embellishment_tiers(args.prompts_root)
+
+        if not args.zeroshot_include_tier_a:
+            before = len(attributes)
+            attributes = {
+                name: a for name, a in attributes.items()
+                if tiers.get(name) != "A"
+            }
+            skipped = before - len(attributes)
+            if skipped:
+                print(f"\nZero-shot tier — skipping {skipped} Tier-A attributes "
+                      f"(served by trained classifier; use "
+                      f"--zeroshot-include-tier-a to override)")
+
+        # Score the same stems that came through the cascade (raw images).
+        cascade_stems = set(df["name"].tolist())
+        image_paths = sorted(
+            p for p in args.image_dir.rglob("*")
+            if p.suffix in IMAGE_EXTENSIONS and p.stem in cascade_stems
+        )
+
+        print(f"\nZero-shot tier — {len(image_paths)} images, "
+              f"{len(attributes)} attributes")
+        print(f"  Prompts   : {args.zeroshot_domain}"
+              + (f" [{category}]" if category else ""))
+        print(f"  Model     : {args.clip_model}")
+
+        processor, clip_model = load_clip(args.clip_model, device)
+        zs_rows = score_images_zeroshot(
+            image_paths = image_paths,
+            attributes  = attributes,
+            processor   = processor,
+            model       = clip_model,
+            device      = device,
+            tiers       = tiers,
+        )
+        zs_df = pd.DataFrame(zs_rows).set_index("name")
+        zeroshot_columns = [c for c in zs_df.columns if c != "name"]
+
+        # Merge zero-shot columns into the running DataFrame
+        df = df.set_index("name")
+        for col in zeroshot_columns:
+            df[col] = zs_df[col]
+        df = df.reset_index()
+
     # ── 6. Write output ─────────────────────────────────────────────────
     args.out_csv.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.out_csv, index=False)
@@ -529,6 +642,10 @@ def main() -> None:
     print(f"ResNet columns : {[c for c in resnet_cols if c in df.columns]}")
     if vlm_columns:
         print(f"VLM columns    : {vlm_columns}")
+    if zeroshot_columns:
+        n_attrs = len([c for c in zeroshot_columns if c.endswith('_pred')])
+        print(f"Zero-shot cols : {n_attrs} attributes "
+              f"({len(zeroshot_columns)} columns: *_score + *_pred)")
     print(f"{'='*60}\n")
 
 if __name__ == "__main__":

@@ -1,0 +1,9 @@
+name: "shoes_heel_height"
+label_column: "attributes" # prepare_tiers renamed the column to 'attributes'
+label_type: "single"
+csv_file: "labels_shoes_heel_height.csv"
+classes:
+- "high-heel"
+- "low-heel"
+- "flat-heel"
+- "mid-heel"

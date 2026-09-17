@@ -1,0 +1,101 @@
+# model_details/shoes.yaml
+# =========================================================================
+# Category-specific MODEL DETAILS for shoes (structural / silhouette).
+# Loaded together with the shared embellishments.yaml by audit_zeroshot.py:
+#   python src/audit_zeroshot.py --category shoes ...
+#
+# Optional `embellishments_overrides:` at the bottom lets you replace a
+# shared embellishment prompt with shoe-specific wording without editing
+# the shared file. Omit the block if no overrides are needed.
+# =========================================================================
+
+category: shoes
+
+attributes:
+  ankle-strap:
+    pos: "a shoe or sandal with a strap fastening around the ankle"
+    neg: "a shoe with no ankle strap"
+  ankle-wrap:
+    pos: "a shoe with long straps that wrap around the ankle or lower leg"
+    neg: "a shoe with no wrapping ankle straps"
+  comma-heel:
+    pos: "a shoe with a curved comma-shaped heel"
+    neg: "a shoe with a straight or block heel, not comma-shaped"
+  cone-heel:
+    pos: "a shoe with a cone-shaped heel, wide at the top tapering to a narrow base"
+    neg: "a shoe with a heel that is not cone-shaped"
+  cross-over:
+    pos: "a shoe with crossed-over straps or overlapping bands across the top"
+    neg: "a shoe with no crossed-over straps"
+  double-strap:
+    pos: "a shoe or sandal with two parallel straps across the foot"
+    neg: "a shoe with a single strap or no straps"
+  flat-heel:
+    pos: "a flat shoe with no raised heel"
+    neg: "a shoe with a raised or high heel"
+  french-heel:
+    pos: "a shoe with a curved French heel with a concave back"
+    neg: "a shoe with a straight or non-French heel"
+  high-heel:
+    pos: "a shoe with a tall high heel"
+    neg: "a flat shoe or a shoe with a low heel"
+  kitten-heel:
+    pos: "a shoe with a short slender kitten heel"
+    neg: "a shoe with a flat sole or a tall heel, not a kitten heel"
+  lace-up:
+    pos: "a shoe fastened with laces threaded through eyelets"
+    neg: "a slip-on, strapped or buckled shoe with no laces"
+  low-heel:
+    pos: "a shoe with a low heel"
+    neg: "a flat shoe or a shoe with a tall high heel"
+  mid-heel:
+    pos: "a shoe with a mid-height heel"
+    neg: "a shoe with a flat sole or a very tall heel"
+  multi-strap:
+    pos: "a shoe or sandal with multiple straps across the foot"
+    neg: "a shoe with a single strap or no straps"
+  open-toe:
+    pos: "a shoe or sandal with an open toe that exposes the toes"
+    neg: "a closed-toe shoe that covers the toes"
+  platform:
+    pos: "a shoe with a thick raised platform sole under the front of the foot"
+    neg: "a shoe with a thin flat sole, no platform"
+  pointed-toe:
+    pos: "a shoe with a sharply pointed toe"
+    neg: "a shoe with a rounded or square toe"
+  round-toe:
+    pos: "a shoe with a rounded toe shape"
+    neg: "a shoe with a pointed or square toe"
+  single-strap:
+    pos: "a shoe or sandal with a single strap across the foot"
+    neg: "a shoe with multiple straps or no straps"
+  sling-back:
+    pos: "a shoe with an open back held by a sling strap around the heel"
+    neg: "a closed-back shoe or a shoe with no sling strap"
+  slouch:
+    pos: "a boot with soft slouchy folds gathered down the shaft"
+    neg: "a structured boot or shoe with no slouchy folds"
+  square-toe:
+    pos: "a shoe with a square or squared-off toe"
+    neg: "a shoe with a pointed or rounded toe"
+  stiletto-heel:
+    pos: "a shoe with a very thin tall stiletto heel"
+    neg: "a shoe with a flat sole or a thick block heel"
+  strappy:
+    pos: "a sandal or shoe made of many thin straps"
+    neg: "a shoe with a solid upper and few or no straps"
+  t-bar:
+    pos: "a shoe with a T-bar strap running from the toe to an ankle strap"
+    neg: "a shoe with no T-bar strap"
+  wedge-heel:
+    pos: "a shoe with a solid wedge heel running under the whole foot"
+    neg: "a shoe with a separate heel, not a wedge"
+  zip-up:
+    pos: "a shoe or boot fastened with a visible zipper"
+    neg: "a shoe with no zipper — laces, straps or slip-on only"
+
+# No shoe-specific embellishment overrides needed at this time.
+# embellishments_overrides:
+#   buckle:
+#     pos: "a shoe with a decorative buckle on the strap or vamp"
+#     neg: "a shoe with no buckle or only a plain functional buckle"

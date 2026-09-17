@@ -274,14 +274,20 @@ def main(config: DictConfig) -> None:
     # 8. Callbacks and logger
     # ------------------------------------------------------------------ #
 
-    # Clean up old checkpoints to avoid Lightning versioning (best-v2.ckpt etc.)
-    for old_ckpt in wts_path.glob("best*.ckpt"):
+        # ── Section 8 ──────────────────────────────────────────────────────
+    finetune_from = config.training.get("finetune_from", None)
+
+    # Stage 2 writes to a distinct filename so it never conflicts with Stage 1.
+    ckpt_filename = "best_stage2" if finetune_from else "best"
+
+    # Clean up old checkpoints WITH THE SAME NAME to avoid Lightning versioning.
+    for old_ckpt in wts_path.glob(f"{ckpt_filename}*.ckpt"):
         old_ckpt.unlink()
         print(f"  Removed old checkpoint: {old_ckpt.name}")
 
     checkpoint_cb = ModelCheckpoint(
         dirpath=str(wts_path),
-        filename="best",
+        filename=ckpt_filename,          # ← "best" or "best_stage2"
         monitor=config.training.checkpoint_metric,
         mode=config.training.checkpoint_mode,
         save_top_k=1,
@@ -327,7 +333,7 @@ def main(config: DictConfig) -> None:
     # This gives Stage 2 a warm weight initialisation while letting the
     # new optimizer start fresh at the lower learning rate — which is
     # correct behaviour when unfreezing layers or changing lr significantly.
-    finetune_from = config.training.get("finetune_from", None)
+
     if finetune_from:
         source_ckpt = wts_path.parent / finetune_from / "best.ckpt"
         if not source_ckpt.exists():

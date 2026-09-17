@@ -47,7 +47,11 @@ class NpyInferenceDataset(Dataset):
     def __getitem__(self, idx: int):
         stem = self.stems[idx]
         img  = np.load(self.npy_root / f"{stem}.npy").astype(np.float32)
-        img  = (img - self.mean) / (self.std + 1e-8)
+        # preprocess.py stores raw 0-255 pixels; CLIP mean/std assume 0-1 input.
+        # Scale to [0,1] only when CLIP-style constants are in use.
+        if float(np.max(self.mean)) <= 1.0:      # CLIP constants → mean ~0.48
+            img = img / 255.0
+        img = (img - self.mean) / (self.std + 1e-8)
         img  = torch.from_numpy(img).permute(2, 0, 1)  # HWC → CHW
         return stem, img
 

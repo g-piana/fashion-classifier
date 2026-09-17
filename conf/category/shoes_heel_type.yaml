@@ -1,0 +1,13 @@
+name: "shoes_heel_type"
+label_column: "attributes" # prepare_tiers renamed the column to 'attributes'
+label_type: "single"
+csv_file: "labels_shoes_heel_type.csv"
+classes:
+- "stiletto-heel"
+- "block-heel"
+- "flat-heel"
+- "kitten-heel"
+- "platform"
+- "wedge-heel"
+- "comma-heel"
+- "cone-heel"

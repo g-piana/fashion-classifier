@@ -76,10 +76,10 @@ def pad_to_square(img: np.ndarray) -> np.ndarray:
 def load_and_prepare(image_path: Path, target_size: int) -> np.ndarray | None:
     """Load image, pad to square, resize. Returns HxWx3 float32 or None on failure."""
     try:
-        img = cv2.imread(str(image_path))
-        if img is None:
-            return None
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        from PIL import Image, ImageOps
+        pil = Image.open(image_path)
+        pil = ImageOps.exif_transpose(pil)      # no-op if orientation is normal
+        img = np.array(pil.convert("RGB"))      # always RGB, no BGR swap needed
         img = pad_to_square(img)
         img = cv2.resize(img, (target_size, target_size), interpolation=cv2.INTER_AREA)
         return img.astype(np.float32)

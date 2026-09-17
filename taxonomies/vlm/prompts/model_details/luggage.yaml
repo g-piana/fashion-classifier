@@ -1,0 +1,42 @@
+# model_details/luggage.yaml
+# Luggage shares the bags closure/strap vocabulary. Prompts say "a piece of
+# luggage" where it reads better, but the attribute set is identical to bags.
+category: luggage
+
+attributes:
+  button-closure:
+    pos: "a piece of luggage or bag closed with a button fastening"
+    neg: "a piece of luggage with a zip, magnetic or other non-button closure"
+  chain-strap:
+    pos: "a piece of luggage or bag with a metal chain strap"
+    neg: "a piece of luggage with a leather or fabric strap, not a chain"
+  cut-out-handle:
+    pos: "a piece of luggage or bag with a handle formed by a cut-out opening"
+    neg: "a piece of luggage with an attached handle, no cut-out"
+  drawstring:
+    pos: "a piece of luggage or bag closed with a drawstring at the top"
+    neg: "a piece of luggage with a flap, zip or frame closure, no drawstring"
+  front-flap:
+    pos: "a piece of luggage or bag with a front flap covering the opening"
+    neg: "an open-top or zip-top piece of luggage with no front flap"
+  hook-closure:
+    pos: "a piece of luggage or bag fastened with a hook closure"
+    neg: "a piece of luggage with a zip, magnetic or button closure, no hook"
+  kiss-lock-closure:
+    pos: "a piece of luggage or bag with a metal kiss-lock clasp"
+    neg: "a piece of luggage with a zip, flap or drawstring, no kiss-lock"
+  lock-closure:
+    pos: "a piece of luggage or bag with a turn-lock or padlock closure"
+    neg: "a piece of luggage with a zip or magnetic closure, no lock"
+  open-top:
+    pos: "an open-top piece of luggage or tote with no closure over the opening"
+    neg: "a piece of luggage with a flap, zip or drawstring closing the top"
+  piston-closure:
+    pos: "a piece of luggage or bag with a piston or push-lock closure"
+    neg: "a piece of luggage with a zip, flap or magnetic closure"
+  shoulder-strap:
+    pos: "a piece of luggage or bag with a shoulder strap"
+    neg: "a piece of luggage with only short handles or no strap"
+  zip-closure:
+    pos: "a piece of luggage or bag closed with a visible zipper"
+    neg: "a piece of luggage with a flap, drawstring or open top, no zip"
