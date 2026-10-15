@@ -46,11 +46,11 @@ def threshold_sweep(
     scores: np.ndarray,
     targets: np.ndarray,
     classes: list[str],
-    thresholds: list[float] = None,
+    thresholds: list[float] | None = None,
 ) -> pd.DataFrame:
     """Find the F1-maximising threshold for each attribute independently."""
     if thresholds is None:
-        thresholds = [round(t, 2) for t in np.arange(0.10, 0.91, 0.05)]
+        thresholds = [round(float(t), 2) for t in np.arange(0.10, 0.91, 0.05)]
 
     rows = []
     for ci, cls in enumerate(classes):
@@ -60,7 +60,7 @@ def threshold_sweep(
             f1 = f1_score(targets[:, ci], preds, zero_division=0)
             if f1 > best_f1:
                 best_f1, best_thresh = f1, t
-        rows.append({"attribute": cls, "best_threshold": best_thresh, "best_f1": round(best_f1, 3)})
+        rows.append({"attribute": cls, "best_threshold": best_thresh, "best_f1": round(float(best_f1), 3)})
     return pd.DataFrame(rows)
 
 
@@ -179,9 +179,9 @@ def main(config: DictConfig) -> None:
         gt, pred = all_targets[:, ci], preds_05[:, ci]
         metric_rows.append({
             "attribute":      cls,
-            "precision":      round(precision_score(gt, pred, zero_division=0), 3),
-            "recall":         round(recall_score(gt, pred, zero_division=0), 3),
-            "f1":             round(f1_score(gt, pred, zero_division=0), 3),
+            "precision":      round(float(precision_score(gt, pred, zero_division=0)), 3),
+            "recall":         round(float(recall_score(gt, pred, zero_division=0)), 3),
+            "f1":             round(float(f1_score(gt, pred, zero_division=0)), 3),
             "support":        int(gt.sum()),
             "pred_positives": int(pred.sum()),
         })
@@ -207,6 +207,39 @@ def main(config: DictConfig) -> None:
     df_thresh = threshold_sweep(all_scores, all_targets, classes)
     print(df_thresh.to_string(index=False))
     print()
+    # --- Metrics at tuned thresholds ---
+    thresholds_cfg = config.category.get("thresholds", {})
+    if thresholds_cfg:
+        tuned_thresholds = [float(thresholds_cfg.get(cls, 0.5)) for cls in classes]
+        preds_tuned = np.array([
+            (all_scores[:, ci] >= tuned_thresholds[ci]).astype(int)
+            for ci in range(len(classes))
+        ]).T
+
+        print(f"{'='*55}")
+        print(f"RESULTS at TUNED thresholds  ({split} split)")
+        print(f"{'='*55}\n")
+
+        tuned_rows = []
+        for ci, cls in enumerate(classes):
+            gt, pred = all_targets[:, ci], preds_tuned[:, ci]
+            tuned_rows.append({
+                "attribute":  cls,
+                "threshold":  tuned_thresholds[ci],
+                "precision":  round(float(precision_score(gt, pred, zero_division=0)), 3),
+                "recall":     round(float(recall_score(gt, pred, zero_division=0)), 3),
+                "f1":         round(float(f1_score(gt, pred, zero_division=0)), 3),
+                "support":    int(gt.sum()),
+            })
+        df_tuned = pd.DataFrame(tuned_rows)
+        for _, row in df_tuned.iterrows():
+            flag = "  ✓" if row["f1"] >= 0.80 else ("  ~" if row["f1"] >= 0.65 else "  ✗")
+            print(f"  {row['attribute']:<18} @{row['threshold']:.2f}  "
+                  f"{row['precision']:>6.3f} {row['recall']:>6.3f} "
+                  f"{row['f1']:>6.3f} {row['support']:>8}{flag}")
+        print(f"\n  Macro F1 (tuned): {df_tuned['f1'].mean():.3f}")
+        print(f"  Macro F1 (@0.50): {macro_f1:.3f}")
+        print(f"  Gain:             +{df_tuned['f1'].mean() - macro_f1:.3f}\n")
 
     # --- Save outputs ---
     out_dir = wts_path / "eval"

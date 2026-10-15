@@ -1,6 +1,6 @@
 defaults:
 - base
 run: "01"
-raw_subdir: "shoes_emb_md_300"
+raw_subdir: "shoes_emb_md"
 image_size: 224
 norm_override: "clip"

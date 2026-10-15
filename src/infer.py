@@ -149,6 +149,12 @@ def main(config: DictConfig) -> None:
     rows = []
 
     with torch.no_grad():
+        thresholds = []
+        if label_type != "single":
+            # Per-class thresholds from category config; default 0.5
+            thresholds_cfg = config.category.get("thresholds", {})
+            thresholds = [float(thresholds_cfg.get(cls, 0.5)) for cls in classes]
+
         for batch_stems, images in loader:
             images = images.to(device)
             logits = model(images)
@@ -171,9 +177,9 @@ def main(config: DictConfig) -> None:
 
                 for stem, prob_vec in zip(batch_stems, probs):
                     row = {"name": stem}
-                    for cls, p in zip(classes, prob_vec):
+                    for cls, p, t in zip(classes, prob_vec, thresholds):
                         row[f"prob_{cls}"]  = round(float(p), 4)
-                        row[f"pred_{cls}"]  = int(p >= 0.5)
+                        row[f"pred_{cls}"]  = int(p >= t)
                     rows.append(row)
 
     # ------------------------------------------------------------------ #

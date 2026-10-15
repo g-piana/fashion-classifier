@@ -337,13 +337,16 @@ EMBELLISHMENT_DESCRIPTIONS = {
     "eyelet": (
         "Visible metal-rimmed holes on the shoe upper, either for lacing or purely decorative. "
         "The metal rim must be clearly visible — a distinct circular metal ring around the hole. "
-        "Common on boots and sneakers as lace holes when the metal eyelet ring is prominent. "
-        "Also includes decorative punched eyelets used as surface ornamentation. "
+        "Includes both small lacing eyelets (5–10mm) on the vamp or shaft, "
+        "AND large decorative grommets (15mm+) scattered across the upper as surface ornamentation — "
+        "both are the same feature at different scales. "
+        "Common on biker boots, punk-style boots, and lace-up sneakers. "
         "NOT sequins: sequins are solid flat discs with no hole through the shoe material. "
+        "NOT o-rings or hardware rings: a solid free-standing metal ring that does NOT punch "
+        "through the material is hardware, not an eyelet. "
         "NOT perforations: small punched holes in leather with no metal rim are not eyelets. "
-        "NOT fur texture or fabric weave patterns. "
-        "The key feature is a METAL RIM around a HOLE — if you cannot see a distinct "
-        "metal ring, it is not an eyelet."
+        "The key feature is a METAL RIM around a HOLE IN THE MATERIAL — if you cannot see a "
+        "distinct metal ring crimped into the surface, it is not an eyelet."
     ),
     "feather": (
         "Real or synthetic feathers used as trim or decoration. "

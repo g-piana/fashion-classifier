@@ -27,82 +27,70 @@ attribute_groups:
   toe_shape:
     label_type: categorical
     system_prompt: >
-      You are a footwear attribute recognition system specialised in toe shapes.
-      Examine the toe box area of the shoe carefully.
-      Choose exactly one toe shape from the provided list.
-      If the toe is not clearly visible, choose the closest match from what is visible.
-      Respond with valid JSON only — no explanation, no markdown.
+      You are a footwear attribute recognition system specialised in toe shapes. Examine the toe box area of the shoe carefully. Choose exactly one toe shape from the provided list. If the toe is not clearly visible, choose the closest match from what is visible. Respond with valid JSON only — no explanation, no markdown.
     attributes:
       toe_shape:
         type: categorical
         classes:
-          - open-toe
-          - pointed-toe
-          - round-toe
-          - square-toe
+        - open-toe
+        - pointed-toe
+        - round-toe
+        - square-toe
         descriptions:
-          open-toe:    "No closed toe box — toes fully exposed (sandals, peep-toe, slides)"
+          open-toe: "No closed toe box — toes fully exposed (sandals, peep-toe, slides)"
           pointed-toe: "Sharply tapered toe box narrowing to a distinct point"
-          round-toe:   "Softly rounded toe box with a curved front edge"
-          square-toe:  "Flat squared-off toe box with a straight front edge"
+          round-toe: "Softly rounded toe box with a curved front edge"
+          square-toe: "Flat squared-off toe box with a straight front edge"
 
   # ── Group 2: Heel type + heel height ────────────────────────────────────
   heel:
     label_type: categorical
     system_prompt: >
-      You are a footwear attribute recognition system specialised in heel analysis.
-      Examine the heel of the shoe carefully.
-      You must return two independent attributes:
+      You are a footwear attribute recognition system specialised in heel analysis. Examine the heel of the shoe carefully. You must return two independent attributes:
         heel_type  — the structural shape of the heel
         heel_height — the approximate height band
-      Choose exactly one value for each from the provided lists.
-      Respond with valid JSON only — no explanation, no markdown.
+      Choose exactly one value for each from the provided lists. Respond with valid JSON only — no explanation, no markdown.
     attributes:
       heel_type:
         type: categorical
         classes:
-          - flat-heel
-          - kitten-heel
-          - stiletto-heel
-          - cone-heel
-          - wedge-heel
-          - comma-heel
-          - french-heel
-          - platform
-          - block-heel
+        - flat-heel
+        - kitten-heel
+        - stiletto-heel
+        - cone-heel
+        - wedge-heel
+        - comma-heel
+        - french-heel
+        - platform
+        - block-heel
         descriptions:
-          flat-heel:    "No heel elevation or less than 1cm — completely flat sole"
-          kitten-heel:  "Thin, slightly tapered heel 3–5cm — short and delicate"
+          flat-heel: "No heel elevation or less than 1cm — completely flat sole"
+          kitten-heel: "Thin, slightly tapered heel 3–5cm — short and delicate"
           stiletto-heel: "Very thin tall heel 7cm+ — needle-like, no taper at base"
-          cone-heel:    "Conical heel wide at top tapering to a smaller point at base"
-          wedge-heel:   "Solid heel that extends continuously under the arch to the toe"
-          comma-heel:   "Curved heel that sweeps forward at the base like a comma shape"
-          french-heel:  "Curved heel that kicks back slightly at top — Louis or curved heel"
-          platform:     "Thick sole elevation at the toe AND heel — platform construction"
-          block-heel:   "Wide rectangular heel with substantial flat base — chunky, stable"
+          cone-heel: "Conical heel wide at top tapering to a smaller point at base"
+          wedge-heel: "Solid heel that extends continuously under the arch to the toe"
+          comma-heel: "Curved heel that sweeps forward at the base like a comma shape"
+          french-heel: "Curved heel that kicks back slightly at top — Louis or curved heel"
+          platform: "Thick sole elevation at the toe AND heel — platform construction"
+          block-heel: "Wide rectangular heel with substantial flat base — chunky, stable"
       heel_height:
         type: categorical
         classes:
-          - flat-heel
-          - low-heel
-          - mid-heel
-          - high-heel
+        - flat-heel
+        - low-heel
+        - mid-heel
+        - high-heel
         descriptions:
-          flat-heel:  "No elevation or under 2cm"
-          low-heel:   "2–4cm heel height"
-          mid-heel:   "4–7cm heel height"
-          high-heel:  "Over 7cm heel height"
+          flat-heel: "No elevation or under 2cm"
+          low-heel: "2–4cm heel height"
+          mid-heel: "4–7cm heel height"
+          high-heel: "Over 7cm heel height"
 
   # ── Group 3: Straps and closure ─────────────────────────────────────────
   straps_and_closure:
     label_type: multi_label
     system_prompt: >
-      You are a footwear attribute recognition system specialised in straps and closures.
-      Examine the entire shoe carefully including the sides, back and top.
-      Multiple attributes can be present simultaneously on the same shoe.
-      Only mark an attribute true if it is clearly and unambiguously visible.
-      Do not infer — if you cannot see it, mark it false.
-      Respond with valid JSON only — no explanation, no markdown.
+      You are a footwear attribute recognition system specialised in straps and closures. Examine the entire shoe carefully including the sides, back and top. Multiple attributes can be present simultaneously on the same shoe. Only mark an attribute true if it is clearly and unambiguously visible. Do not infer — if you cannot see it, mark it false. Respond with valid JSON only — no explanation, no markdown.
     attributes:
       ankle-strap:
         description: "Single strap encircling the ankle — fastened at the side or back"
@@ -119,7 +107,7 @@ attribute_groups:
       cross-over:
         description: "Straps that cross diagonally over the foot forming an X pattern"
       t-bar:
-        description: "T-shaped strap — one horizontal strap across vamp joined by vertical strap to toe"
+        description: "T-shaped strap — one horizontal strap across vamp joined by vertical strap to toe. Not vertical toe strap in a thong sandal"
       sling-back:
         description: "Strap crossing behind the heel — no full back counter"
       lace-up:
@@ -136,37 +124,20 @@ attribute_groups:
   embellishments:
     label_type: multi_label
     system_prompt: >
-      You are a footwear embellishment recognition system.
-      Examine the entire shoe surface carefully including upper, sole edge, heel and straps.
-      Multiple embellishments can be present simultaneously.
-      Only mark an attribute true if it is clearly and unambiguously visible.
-      Do not infer or guess — if you cannot see it clearly, mark it false.
-      Respond with valid JSON only — no explanation, no markdown.
+      You are a footwear embellishment recognition system. Examine the entire shoe surface carefully including upper, sole edge, heel and straps. Multiple embellishments can be present simultaneously. Only mark an attribute true if it is clearly and unambiguously visible. Do not infer or guess — if you cannot see it clearly, mark it false. Respond with valid JSON only — no explanation, no markdown.
     attributes:
       bead:
         description: "Individual beads or beaded decoration — beaded strap, fringe or surface coverage"
-      bird-element:
-        description: "Decorative bird motif — eagle, dove, peacock or other bird shape, printed, moulded or applied"
       bow:
         description: "Fabric, leather or ribbon bow — any size or position on the shoe"
-      braid:
-        description: "Braided or plaited material — woven strap, trim or upper construction"
       buckle:
         description: "Metal or resin buckle hardware — functional or purely decorative"
-      butterfly-element:
-        description: "Butterfly motif or shape — printed, embroidered, moulded or applied as charm"
       button:
-        description: "Decorative button — fabric-covered, metal or resin, not as functional fastening"
+        description: "Decorative button — fabric-covered, metal or resin"
       chain:
         description: "Metal chain detail — as strap, ankle chain, trim or draped decorative element"
-      charme:
-        description: "Small dangling charm or pendant — keyring-style metal or enamel element attached to shoe"
-      crown-element:
-        description: "Crown motif or shape — printed, embroidered, moulded or applied as hardware"
       crystal:
         description: "Rhinestone, crystal, diamanté or Swarovski embellishment — sparkle or glitter detail"
-      dragon-element:
-        description: "Dragon motif — printed, embroidered or moulded decorative element"
       embroidery:
         description: "Thread embroidery stitched into the upper — floral, geometric or figurative"
       eyelet:
@@ -182,58 +153,20 @@ attribute_groups:
       gemstone:
         description: "Natural or synthetic gemstone — turquoise, amber, coral or similar set into upper or heel"
       hardware:
-        description: "Decorative metal hardware — logo plaques, bars, D-rings, horsebits, not buckles"
-      heart-element:
-        description: "Heart motif or shape — printed, embroidered, moulded, cut-out or applied"
+        description: "Decorative metal hardware — logo plaques, bars, D-rings, horsebits, metal heels not buckles"
       lace:
         description: "Lace fabric used as upper material, overlay panel or trim"
-      leaf-element:
-        description: "Leaf motif — printed, embroidered, moulded or applied as decoration"
-      leopard-element:
-        description: "Leopard or animal spot print — on upper, lining visible at collar, or heel"
-      logo:
-        description: "Brand logo printed, embossed or woven directly into the upper material or sole"
-      logo-element:
-        description: "Branded decorative element — logo charm, monogram plaque or branded hardware piece"
       mesh-insert:
-        description: "Mesh, net or open-weave fabric panel insert in the upper"
-      metal-plate:
-        description: "Flat metal plate affixed to the upper, toe cap or heel — decorative, not toe-tapping"
-      mirror:
-        description: "Mirror or mirrored surface element — small mirror pieces or mirror-finish panel"
-      moon-element:
-        description: "Moon or crescent motif — printed, embroidered, moulded or applied"
-      o-ring:
-        description: "O-ring or circular metal ring hardware used as strap connector or decoration"
+        description: "Mesh, net or open-weave fabric panel insert in the upper, not lace"
       patch:
         description: "Fabric, leather or embroidered patch appliquéd or sewn onto the upper"
       pearl:
         description: "Pearl or faux-pearl embellishment — single pearl, clustered or pearl trim"
-      pin:
-        description: "Decorative pin or brooch — metal pin affixed to upper or strap"
       pom-pom:
         description: "Fluffy pom-pom — fabric, fur or yarn ball attached to toe, strap or heel"
       ribbon:
         description: "Satin, grosgrain or organza ribbon — as trim, lace or bow distinct from fabric bow"
-      rope:
-        description: "Rope or cord material — twisted or braided rope used as trim, wedge or strap"
       sequin:
         description: "Sequins or metallic disc embellishment — covering the surface or used as trim strip"
-      shell:
-        description: "Shell or shell motif — real shell, mother-of-pearl inlay or shell-shaped decoration"
-      skull-element:
-        description: "Skull motif — printed, embossed, moulded or applied as charm or hardware"
-      snake-element:
-        description: "Snake or serpent motif — printed, embroidered, moulded or applied — distinct from snakeskin texture"
-      star-element:
-        description: "Star motif or shape — printed, embroidered, studded star or applied star charm"
       stud:
         description: "Metal studs or spikes — punk or rock-style embellishment covering surface or as trim"
-      tassel:
-        description: "Hanging tassel — leather cord, suede, fabric or beaded tassel"
-      trim:
-        description: "Contrasting material trim along edges — piping, binding or border strip in different colour or texture"
-      web:
-        description: "Web or net pattern — spider-web motif printed, embossed or cut-out"
-      zipper:
-        description: "Exposed decorative zipper — zipper tape or pull used as ornamental element, not as closure"

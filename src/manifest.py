@@ -169,7 +169,7 @@ def backfill_manifest(
         "trained_at": None,   # unknown for backfilled checkpoints
         "val_metric_name":  val_metric_name,
         "val_metric_value": round(float(val_metric_value), 4) if val_metric_value is not None else None,
-        "checkpoint": "best.ckpt"
+        "checkpoint": "best.ckpt",
         "normalization": "normalization.npy",
         "backfilled":    True,   # flag so we know this wasn't written by train.py
     }

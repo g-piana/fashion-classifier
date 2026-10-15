@@ -12,7 +12,6 @@ classes:
 - "bow"
 - "sequin"
 - "fur"
-- "logo"
 - "pearl"
 - "eyelet"
 - "fringe"
@@ -26,3 +25,12 @@ classes:
 - "feather"
 - "ribbon"
 - "button"
+# Per-class prediction thresholds. Only list overrides — classes not listed
+# use the default (0.5). Found via evaluate_multilabel.py threshold sweep.
+# Only trust sweep results where val support >= 8.
+thresholds:
+  crystal: 0.65
+  embroidery: 0.70
+  sequin: 0.40
+  chain: 0.80
+  fringe: 0.80

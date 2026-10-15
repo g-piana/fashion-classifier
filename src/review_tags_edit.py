@@ -484,8 +484,8 @@ function render() {{
     boolEntries.forEach(([col]) => {{
       const raw     = row.attrs[col];
       const origRaw = orig.attrs[col];
-      const isOn    = raw === true || raw === "True" || raw === "true";
-      const wasOn   = origRaw === true || origRaw === "True" || origRaw === "true";
+      const isOn  = raw === true || String(raw).toLowerCase() === "true";
+      const wasOn = origRaw === true || String(origRaw).toLowerCase() === "true";
       const changed = isOn !== wasOn;
 
       const t = document.createElement("span");
@@ -566,8 +566,8 @@ function exportCSV() {{
       if (col === "name") return csvCell(row.name);
       if (col === "note") return csvCell(row.note || "");
       const v = row.attrs[col];
-      if (v === true  || v === "True")  return "True";
-      if (v === false || v === "False" || v === undefined || v === null) return "False";
+      if (v === true  || String(v).toLowerCase() === "true")  return "True";
+      if (v === false || String(v).toLowerCase() === "false" || v === undefined || v === null) return "False";
       return csvCell(String(v));
     }}).join(",");
   }});
